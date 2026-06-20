@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI Tools Hub">
+<title>AI Tools Hub — Free AI Tools Directory</title>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;AI Tools Hub&quot;,&quot;short_name&quot;:&quot;AI Hub&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230f0f1a&quot;,&quot;theme_color&quot;:&quot;%230f0f1a&quot;}">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0f1a;--bg2:#16162a;--bg3:#1e1e35;--bg4:#252540;
+  --text:#f0f0ff;--text2:#a0a0c0;--text3:#6060a0;
+  --accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;
+  --border:#2a2a4a;--radius:14px;--radius-sm:8px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:80px}
+/* Header */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px 10px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.app-logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px}
+.app-name{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+.app-sub{font-size:11px;color:var(--text3)}
+.header-actions{display:flex;gap:8px}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+/* Search */
+.search-wrap{position:relative;margin-bottom:4px}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px 10px 40px;color:var(--text);font-size:14px;outline:none}
+.search-input::placeholder{color:var(--text3)}
+.search-input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 8px;cursor:pointer;gap:3px;color:var(--text3);font-size:10px;border:none;background:transparent;transition:color 0.15s}
+.nav-item.active{color:var(--accent)}
+.nav-item span{font-size:20px}
+/* Content */
+.content{padding:16px}
+.page{display:none}
+.page.active{display:block}
+/* Category filter */
+.filter-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;margin-bottom:16px}
+.filter-scroll::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.cat-card:active{transform:scale(0.97)}
+.cat-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:50%;opacity:0.08;transform:translate(20px,-20px)}
+.cat-icon{font-size:28px;margin-bottom:8px;display:block}
+.cat-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.cat-count{font-size:10px;color:var(--text3)}
+.cat-card.c1{border-top:2px solid #6c63ff}.cat-card.c1::before{background:#6c63ff}
+.cat-card.c2{border-top:2px solid #ff6584}.cat-card.c2::before{background:#ff6584}
+.cat-card.c3{border-top:2px solid #43e97b}.cat-card.c3::before{background:#43e97b}
+.cat-card.c4{border-top:2px solid #f7971e}.cat-card.c4::before{background:#f7971e}
+.cat-card.c5{border-top:2px solid #4facfe}.cat-card.c5::before{background:#4facfe}
+.cat-card.c6{border-top:2px solid #fa709a}.cat-card.c6::before{background:#fa709a}
+.cat-card.c7{border-top:2px solid #a18cd1}.cat-card.c7::before{background:#a18cd1}
+.cat-card.c8{border-top:2px solid #fccb90}.cat-card.c8::before{background:#fccb90}
+.cat-card.c9{border-top:2px solid #00c9ff}.cat-card.c9::before{background:#00c9ff}
+.cat-card.c10{border-top:2px solid #92fe9d}.cat-card.c10::before{background:#92fe9d}
+/* Tool cards */
+.tools-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
+.tools-title{font-size:16px;font-weight:600}
+.tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.15s;text-decoration:none}
+.tool-card:active{transform:scale(0.98);border-color:var(--accent)}
+.tool-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.tool-info{flex:1;min-width:0}
+.tool-name{font-size:14px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.tool-desc{font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:4px}
+.tool-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tool-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text3)}
+.new-badge{font-size:9px;padding:2px 6px;border-radius:8px;background:#43e97b22;color:#43e97b;font-weight:600}
+.hot-badge{font-size:9px;padding:2px 6px;border-radius:8px;background:#ff658422;color:#ff6584;font-weight:600}
+.free-badge{font-size:9px;padding:2px 6px;border-radius:8px;background:#6c63ff22;color:#6c63ff;font-weight:600}
+.tool-arrow{color:var(--text3);font-size:16px;flex-shrink:0}
+.fav-btn{background:none;border:none;cursor:pointer;font-size:18px;flex-shrink:0}
+/* Trending section */
+.section-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.trend-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.trend-rank{font-size:22px;font-weight:800;color:var(--border);min-width:28px}
+.trend-info{flex:1}
+.trend-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.trend-cat{font-size:11px;color:var(--text3)}
+/* Chatbot */
+.chat-container{display:flex;flex-direction:column;height:calc(100vh - 180px)}
+.chat-messages{flex:1;overflow-y:auto;padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.chat-messages::-webkit-scrollbar{width:0}
+.msg-wrap{display:flex;flex-direction:column}
+.msg-wrap.user{align-items:flex-end}
+.msg-wrap.ai{align-items:flex-start}
+.msg-bubble{max-width:85%;padding:10px 14px;border-radius:var(--radius);font-size:13px;line-height:1.55}
+.msg-wrap.user .msg-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.msg-wrap.ai .msg-bubble{background:var(--bg3);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.ai-label{font-size:10px;color:var(--text3);margin-bottom:4px;padding-left:2px}
+.chat-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sugg-chip{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;white-space:nowrap}
+.sugg-chip:active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end;padding-top:10px;border-top:1px solid var(--border)}
+.chat-textarea{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;resize:none;outline:none;min-height:42px;max-height:120px}
+.chat-textarea:focus{border-color:var(--accent)}
+.chat-send{width:42px;height:42px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Settings */
+.settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.settings-label{font-size:11px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em;text-transform:uppercase}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:13px}
+.settings-row-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.api-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-size:12px;outline:none;margin-top:8px;font-family:monospace}
+.api-input:focus{border-color:var(--accent)}
+.save-btn{width:100%;padding:12px;border-radius:var(--radius);background:var(--accent);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+/* Dots loading */
+.dots{display:inline-flex;gap:4px;align-items:center;padding:4px 0}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:dotpulse 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotpulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:20px;font-size:12px;opacity:0;transition:all 0.25s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Fav page */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+/* Search results */
+.search-results{margin-top:4px}
+.no-results{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div class="app-logo">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <div class="app-name">AI Tools Hub</div>
+        <div class="app-sub">300+ Free AI Tools</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn" onclick="showFavs()" title="Favourites">⭐</div>
+      <div class="icon-btn" onclick="showPage('settings')" title="Settings">⚙️</div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search-input" type="search" placeholder="Search tools, e.g. 'remove background'..." oninput="handleSearch(this.value)">
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('home')" id="nav-home">
+    <span>🏠</span>Home
+  </button>
+  <button class="nav-item" onclick="showPage('trending')" id="nav-trending">
+    <span>🔥</span>Trending
+  </button>
+  <button class="nav-item" onclick="showPage('chatbot')" id="nav-chatbot">
+    <span>🤖</span>AI Guide
+  </button>
+  <button class="nav-item" onclick="showPage('favourites')" id="nav-favourites">
+    <span>⭐</span>Saved
+  </button>
+</div>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active content">
+  <div id="home-categories">
+    <div class="section-title">All Categories <span style="font-size:12px;color:var(--text3)">20 categories</span></div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <div id="tool-list" style="display:none">
+    <div class="tools-header">
+      <button class="back-btn" onclick="showCategories()">←</button>
+      <div>
+        <div class="tools-title" id="tools-title">Tools</div>
+        <div style="font-size:11px;color:var(--text3)" id="tools-count"></div>
+      </div>
+    </div>
+    <div id="tools-container"></div>
+  </div>
+  <div id="search-page" style="display:none">
+    <div class="tools-header">
+      <button class="back-btn" onclick="clearSearch()">←</button>
+      <div class="tools-title">Search Results</div>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+<!-- TRENDING PAGE -->
+<div id="page-trending" class="page content">
+  <div class="section-title">🔥 Trending AI Tools This Week</div>
+  <div id="trending-list"></div>
+  <div class="section-title" style="margin-top:16px">⚡ Just Launched</div>
+  <div id="new-list"></div>
+</div>
+
+<!-- CHATBOT PAGE -->
+<div id="page-chatbot" class="page content">
+  <div class="chat-container">
+    <div class="chat-messages" id="chat-messages"></div>
+    <div>
+      <div class="chat-suggestions" id="chat-suggestions"></div>
+      <div class="chat-input-row">
+        <textarea class="chat-textarea" id="chat-input" placeholder="Ask me what tool you need..." rows="1" onkeydown="chatKeyDown(event)"></textarea>
+        <button class="chat-send" onclick="sendChat()">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAVOURITES PAGE -->
+<div id="page-favourites" class="page content">
+  <div class="section-title">⭐ Saved Tools</div>
+  <div id="fav-list"></div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div id="page-settings" class="page content">
+  <div style="font-size:18px;font-weight:700;margin-bottom:16px">Settings</div>
+  <div class="settings-card">
+    <div class="settings-label">AI Guide API Key</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:6px">Add your free Anthropic API key to make the AI Guide smarter. Get it free at console.anthropic.com</div>
+    <input class="api-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..." value="">
+    <button class="save-btn" onclick="saveApiKey()">Save API Key</button>
+  </div>
+  <div class="settings-card">
+    <div class="settings-label">App Info</div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">AI Tools Hub</div><div class="settings-row-sub">Version 1.0 — All tools free</div></div>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">Total Tools</div><div class="settings-row-sub">300+ curated free tools</div></div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent)">300+</div>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row-label">Categories</div></div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent2)">20</div>
+    </div>
+  </div>
+  <div class="settings-card">
+    <div class="settings-label">Data</div>
+    <div class="settings-row" style="cursor:pointer" onclick="clearFavs()">
+      <div><div class="settings-row-label">Clear Saved Tools</div><div class="settings-row-sub">Remove all favourites</div></div>
+      <span style="color:#ff6584">Clear</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORIES = [
+  {id:'image',name:'Image Editing',icon:'🖼️',color:'c1',count:18,desc:'Edit, enhance, upscale'},
+  {id:'video',name:'Video Tools',icon:'🎬',color:'c2',count:15,desc:'Edit, create, caption'},
+  {id:'ai-write',name:'AI Writing',icon:'✍️',color:'c3',count:20,desc:'ChatGPT, Claude, Gemini'},
+  {id:'photo4k',name:'Photo to 4K',icon:'🔭',color:'c4',count:10,desc:'Upscale & enhance'},
+  {id:'bgremove',name:'Background Remove',icon:'✂️',color:'c5',count:8,desc:'Instant bg removal'},
+  {id:'aiart',name:'AI Image Gen',icon:'🎨',color:'c6',count:14,desc:'Generate images free'},
+  {id:'social',name:'Social Media',icon:'📱',color:'c7',count:16,desc:'Captions, hashtags, plan'},
+  {id:'audio',name:'Voice & Audio',icon:'🎵',color:'c8',count:12,desc:'TTS, music, voice clone'},
+  {id:'caption',name:'Auto Captions',icon:'💬',color:'c9',count:8,desc:'Subtitles & captions'},
+  {id:'pdf',name:'PDF Tools',icon:'📄',color:'c10',count:10,desc:'Convert, compress, merge'},
+  {id:'video-gen',name:'AI Video Gen',icon:'🎥',color:'c1',count:10,desc:'Text to video AI'},
+  {id:'face',name:'Face & Photo Fix',icon:'😊',color:'c2',count:8,desc:'Restore, enhance faces'},
+  {id:'code',name:'AI Coding',icon:'💻',color:'c3',count:12,desc:'Code assistant & tools'},
+  {id:'translate',name:'Translate & OCR',icon:'🌐',color:'c4',count:8,desc:'Translate, read text'},
+  {id:'music',name:'AI Music Gen',icon:'🎶',color:'c5',count:6,desc:'Generate free music'},
+  {id:'3d',name:'3D & Design',icon:'🎮',color:'c6',count:8,desc:'3D models, logos, design'},
+  {id:'research',name:'AI Research',icon:'🔬',color:'c7',count:10,desc:'Summarize, find info'},
+  {id:'present',name:'Presentations',icon:'📊',color:'c8',count:8,desc:'AI slides & decks'},
+  {id:'chatbot',name:'AI Chatbots',icon:'🤖',color:'c9',count:12,desc:'All top AI chatbots'},
+  {id:'misc',name:'More Free Tools',icon:'⚡',color:'c10',count:20,desc:'Trending misc tools'},
+];
+
+const TOOLS = {
+  'image':[
+    {name:'Canva',desc:'Free image editor, templates, social media graphics. Best for non-designers.',url:'https://canva.com',icon:'🎨',tags:['Editor','Templates','Free'],badge:'hot'},
+    {name:'Adobe Express',desc:'Quick image editing, resizing, background removal — completely free tier.',url:'https://express.adobe.com',icon:'✨',tags:['Adobe','Edit','Resize'],badge:'free'},
+    {name:'Pixlr',desc:'Professional Photoshop-like editor in browser. No download needed.',url:'https://pixlr.com',icon:'🖼️',tags:['Photoshop','Browser'],badge:'free'},
+    {name:'Fotor',desc:'AI photo editor with one-click enhance, retouch, and effects.',url:'https://fotor.com',icon:'🌟',tags:['AI Enhance','Retouch'],badge:'free'},
+    {name:'Photopea',desc:'100% free Photoshop alternative in browser. Opens PSD files.',url:'https://photopea.com',icon:'💎',tags:['Photoshop','PSD','Free'],badge:'hot'},
+    {name:'Remove.bg',desc:'Remove background from images in 1 click — completely free.',url:'https://remove.bg',icon:'✂️',tags:['Background','1-Click'],badge:'hot'},
+    {name:'Cleanup.pictures',desc:'Remove unwanted objects from photos using AI magic.',url:'https://cleanup.pictures',icon:'🪄',tags:['Object Remove','AI'],badge:'new'},
+    {name:'Inpaint',desc:'Remove objects, people, watermarks from photos for free.',url:'https://theinpaint.com',icon:'🖌️',tags:['Remove Object','Watermark'],badge:'free'},
+    {name:'BeFunky',desc:'Photo editor + collage maker. Great for social media content.',url:'https://befunky.com',icon:'🎭',tags:['Collage','Social'],badge:'free'},
+    {name:'LunaPic',desc:'Free online photo editor with 200+ effects and filters.',url:'https://lunapic.com',icon:'🌙',tags:['Effects','Filters'],badge:'free'},
+  ],
+  'photo4k':[
+    {name:'Upscale.media',desc:'AI upscale images to 4K quality. Free 4 images per day.',url:'https://upscale.media',icon:'🔭',tags:['4K','Upscale','AI'],badge:'hot'},
+    {name:'Let\'s Enhance',desc:'Upscale photos up to 16x without losing quality. Free credits.',url:'https://letsenhance.io',icon:'⬆️',tags:['Upscale','16x'],badge:'hot'},
+    {name:'Waifu2x',desc:'Free unlimited image upscaling — great for photos and art.',url:'https://waifu2x.udp.jp',icon:'🌸',tags:['Free','Unlimited'],badge:'free'},
+    {name:'ImgUpscaler',desc:'Enlarge and enhance images using AI. Free without signup.',url:'https://imgupscaler.com',icon:'📈',tags:['No Login','Free'],badge:'new'},
+    {name:'Bigjpg',desc:'AI image super resolution. Free, no login required.',url:'https://bigjpg.com',icon:'🔍',tags:['Super Res','Free'],badge:'free'},
+    {name:'Gigapixel AI (free)',desc:'Use free version of Topaz Gigapixel for 4K enhancement.',url:'https://topazlabs.com/gigapixel',icon:'💫',tags:['Professional','4K'],badge:'hot'},
+    {name:'Clipdrop Upscale',desc:'Free AI upscaling by Stability AI — very high quality.',url:'https://clipdrop.co/image-upscaler',icon:'🚀',tags:['Stability AI','Quality'],badge:'new'},
+    {name:'Upscayl',desc:'Free open-source desktop app for 4K upscaling. Unlimited.',url:'https://upscayl.org',icon:'🆙',tags:['Desktop','Unlimited','Open Source'],badge:'new'},
+  ],
+  'bgremove':[
+    {name:'Remove.bg',desc:'Best background remover. Free 5 HD downloads per month.',url:'https://remove.bg',icon:'✂️',tags:['Best','HD','Free'],badge:'hot'},
+    {name:'Erase.bg',desc:'Remove background for free, unlimited low-res downloads.',url:'https://erase.bg',icon:'🗑️',tags:['Unlimited','Free'],badge:'free'},
+    {name:'Bgremover (Fotor)',desc:'AI-powered background removal with editing tools included.',url:'https://fotor.com/features/background-remover',icon:'🎯',tags:['AI','Editor'],badge:'free'},
+    {name:'Photoroom',desc:'Remove bg + add studio backgrounds. Great for product photos.',url:'https://photoroom.com',icon:'📸',tags:['Product','Studio BG'],badge:'hot'},
+    {name:'Slazzer',desc:'Free background removal with API access.',url:'https://slazzer.com',icon:'⚡',tags:['API','Free'],badge:'free'},
+    {name:'Clipdrop BG Remove',desc:'By Stability AI. Professional quality background removal free.',url:'https://clipdrop.co/remove-background',icon:'🌟',tags:['Stability AI','Pro'],badge:'new'},
+  ],
+  'video':[
+    {name:'CapCut Web',desc:'TikTok\'s video editor online. Free templates, captions, effects.',url:'https://capcut.com',icon:'✂️',tags:['Templates','Captions','Free'],badge:'hot'},
+    {name:'Clipchamp',desc:'Microsoft\'s free video editor with AI features. Built into Windows.',url:'https://clipchamp.com',icon:'🎬',tags:['Microsoft','AI','Free'],badge:'free'},
+    {name:'Veed.io',desc:'Add subtitles, trim, merge videos free. Great for social content.',url:'https://veed.io',icon:'🎯',tags:['Subtitles','Social'],badge:'hot'},
+    {name:'Clideo',desc:'Free online video editor — cut, merge, compress, convert.',url:'https://clideo.com',icon:'🔧',tags:['Cut','Merge','Convert'],badge:'free'},
+    {name:'Kapwing',desc:'AI-powered video editor with auto-subtitles and meme maker.',url:'https://kapwing.com',icon:'🤖',tags:['AI Subtitles','Meme'],badge:'hot'},
+    {name:'FlexClip',desc:'Easy video maker with stock footage and music. Free tier.',url:'https://flexclip.com',icon:'📹',tags:['Stock','Music','Easy'],badge:'free'},
+    {name:'DaVinci Resolve',desc:'Professional video editor — completely free. Industry standard.',url:'https://blackmagicdesign.com/products/davinciresolve',icon:'💎',tags:['Professional','Free','Desktop'],badge:'hot'},
+    {name:'Shotcut',desc:'Free open-source video editor for all platforms.',url:'https://shotcut.org',icon:'🎞️',tags:['Open Source','Desktop'],badge:'free'},
+    {name:'Mango AI',desc:'Create videos from text with AI-generated clips and voiceover.',url:'https://mango.ai',icon:'🥭',tags:['Text to Video','Voiceover'],badge:'new'},
+    {name:'InVideo AI',desc:'AI video creator — describe video and it creates it for you.',url:'https://invideo.io',icon:'🚀',tags:['AI Create','Text to Video'],badge:'hot'},
+  ],
+  'ai-write':[
+    {name:'ChatGPT',desc:'OpenAI\'s ChatGPT. Best for writing, coding, analysis. Free tier.',url:'https://chat.openai.com',icon:'💬',tags:['OpenAI','Best','Free'],badge:'hot'},
+    {name:'Google Gemini',desc:'Google\'s AI — great for research, images, and long content.',url:'https://gemini.google.com',icon:'✨',tags:['Google','Research','Images'],badge:'hot'},
+    {name:'Claude AI',desc:'Anthropic\'s Claude — best for writing, coding, analysis.',url:'https://claude.ai',icon:'🤖',tags:['Anthropic','Writing','Analysis'],badge:'hot'},
+    {name:'Microsoft Copilot',desc:'Free GPT-4 powered AI by Microsoft. No limits on free tier.',url:'https://copilot.microsoft.com',icon:'🪟',tags:['GPT-4','Microsoft','Free'],badge:'hot'},
+    {name:'Perplexity AI',desc:'AI search engine — find info with sources. Best for research.',url:'https://perplexity.ai',icon:'🔍',tags:['Search','Sources','Research'],badge:'hot'},
+    {name:'Meta AI',desc:'Free AI by Meta inside WhatsApp, Instagram, Facebook.',url:'https://meta.ai',icon:'📘',tags:['Meta','WhatsApp','Free'],badge:'new'},
+    {name:'Mistral AI',desc:'Free European AI — fast and accurate for most tasks.',url:'https://chat.mistral.ai',icon:'💨',tags:['European','Fast','Free'],badge:'new'},
+    {name:'Groq',desc:'World\'s fastest AI inference. Free with incredible speed.',url:'https://groq.com',icon:'⚡',tags:['Fastest','Free','Speed'],badge:'new'},
+    {name:'HuggingChat',desc:'Free open-source AI chatbot by Hugging Face.',url:'https://huggingface.co/chat',icon:'🤗',tags:['Open Source','Free'],badge:'free'},
+    {name:'You.com',desc:'AI search + chat. Free, no login. Combines web + AI.',url:'https://you.com',icon:'🔎',tags:['Search','No Login'],badge:'free'},
+    {name:'Writesonic',desc:'AI writer for blogs, ads, social media. Free 10k words/month.',url:'https://writesonic.com',icon:'✍️',tags:['Blogs','Ads','Social'],badge:'free'},
+    {name:'Copy.ai',desc:'AI copywriting for marketing. Free 2000 words/month.',url:'https://copy.ai',icon:'📝',tags:['Marketing','Copy'],badge:'free'},
+  ],
+  'aiart':[
+    {name:'Adobe Firefly',desc:'Free AI image generator by Adobe. Best quality, commercial safe.',url:'https://firefly.adobe.com',icon:'🔥',tags:['Adobe','Commercial','Best'],badge:'hot'},
+    {name:'Microsoft Designer',desc:'Free AI image generation powered by DALL-E 3.',url:'https://designer.microsoft.com',icon:'🎨',tags:['DALL-E 3','Free','Microsoft'],badge:'hot'},
+    {name:'Ideogram',desc:'Text-heavy image generation. Best for logos and text in images.',url:'https://ideogram.ai',icon:'💡',tags:['Text in Image','Logos'],badge:'hot'},
+    {name:'Lexica.art',desc:'Stable Diffusion search + free image generation.',url:'https://lexica.art',icon:'📖',tags:['Stable Diffusion','Search'],badge:'free'},
+    {name:'NightCafe',desc:'Free AI art generator with multiple models.',url:'https://nightcafe.studio',icon:'🌙',tags:['Multiple Models','Free Credits'],badge:'free'},
+    {name:'Playground AI',desc:'Free 500 images/day. Multiple AI models. No watermark.',url:'https://playground.com',icon:'🎪',tags:['500/day','No Watermark'],badge:'hot'},
+    {name:'Bing Image Creator',desc:'DALL-E 3 powered, completely free. Great quality.',url:'https://bing.com/create',icon:'🔵',tags:['DALL-E 3','Free','Bing'],badge:'hot'},
+    {name:'Canva AI',desc:'Text to image inside Canva. Free tier available.',url:'https://canva.com/ai-image-generator',icon:'🖌️',tags:['Canva','Easy'],badge:'free'},
+    {name:'Stable Diffusion XL',desc:'Run Stable Diffusion free on Hugging Face Spaces.',url:'https://huggingface.co/spaces/stabilityai/stable-diffusion',icon:'🌊',tags:['Open Source','Free','SDXL'],badge:'free'},
+    {name:'Craiyon',desc:'Free unlimited AI image generation. No sign up needed.',url:'https://craiyon.com',icon:'🖍️',tags:['Unlimited','No Login'],badge:'free'},
+    {name:'Freepik AI',desc:'AI image generation inside Freepik. Free credits daily.',url:'https://freepik.com/ai/image-generator',icon:'⭐',tags:['Daily Credits','Freepik'],badge:'new'},
+    {name:'Tensor.art',desc:'Free anime and realistic AI art generation. Community models.',url:'https://tensor.art',icon:'🎭',tags:['Anime','Realistic','Free'],badge:'new'},
+  ],
+  'video-gen':[
+    {name:'Google Veo (Flow)',desc:'Google\'s video generation AI. Access via Google AI Studio free.',url:'https://aistudio.google.com',icon:'🎥',tags:['Google','Best Quality','Free'],badge:'hot'},
+    {name:'Sora (free tier)',desc:'OpenAI Sora for text-to-video. Free tier with watermark.',url:'https://sora.com',icon:'🌀',tags:['OpenAI','Text to Video'],badge:'hot'},
+    {name:'Kling AI',desc:'High quality text to video. Free 30 credits/day.',url:'https://klingai.com',icon:'🎬',tags:['30 Credits','Quality'],badge:'hot'},
+    {name:'Pika Labs',desc:'AI video generation from text and images. Free credits.',url:'https://pika.art',icon:'⚡',tags:['Text+Image','Free Credits'],badge:'hot'},
+    {name:'Runway ML',desc:'Gen-3 video AI. Free 125 credits on signup.',url:'https://runwayml.com',icon:'🛫',tags:['Gen-3','125 Credits'],badge:'hot'},
+    {name:'Luma Dream Machine',desc:'Realistic video generation from text or image. Free credits.',url:'https://lumalabs.ai/dream-machine',icon:'💫',tags:['Realistic','Free'],badge:'new'},
+    {name:'Hailuo AI',desc:'Free text to video with high quality output. No signup.',url:'https://hailuoai.com',icon:'🌊',tags:['Free','No Signup'],badge:'new'},
+    {name:'MiniMax Video',desc:'Free AI video generation with good quality and speed.',url:'https://minimaxi.com',icon:'🎞️',tags:['Fast','Free','Quality'],badge:'new'},
+    {name:'Viggle AI',desc:'Make anyone do any motion. Free viral video tool.',url:'https://viggle.ai',icon:'🕺',tags:['Motion','Viral','Free'],badge:'hot'},
+    {name:'CapCut AI Video',desc:'AI video effects and generation inside CapCut. Free.',url:'https://capcut.com/ai-video-generator',icon:'✨',tags:['CapCut','Effects','Free'],badge:'free'},
+  ],
+  'social':[
+    {name:'Buffer',desc:'Schedule posts across all social media. Free 3 channels.',url:'https://buffer.com',icon:'📅',tags:['Schedule','3 Channels','Free'],badge:'free'},
+    {name:'Later',desc:'Visual social media planner. Free 14 posts/month per platform.',url:'https://later.com',icon:'🗓️',tags:['Visual','Instagram','Free'],badge:'hot'},
+    {name:'Metricool',desc:'Free social media analytics, scheduler and planner.',url:'https://metricool.com',icon:'📊',tags:['Analytics','Schedule'],badge:'free'},
+    {name:'Predis.ai',desc:'AI captions, hashtags, and post ideas generator. Free.',url:'https://predis.ai',icon:'🤖',tags:['AI Captions','Hashtags'],badge:'hot'},
+    {name:'Hashtagify',desc:'Find best hashtags for any topic. Free basic search.',url:'https://hashtagify.me',icon:'#️⃣',tags:['Hashtags','Research'],badge:'free'},
+    {name:'Display Purposes',desc:'Instagram hashtag generator. Best free tool for IG hashtags.',url:'https://displaypurposes.com',icon:'📌',tags:['Instagram','Best Free'],badge:'hot'},
+    {name:'Mention',desc:'Track brand mentions across social media free.',url:'https://mention.com',icon:'🔔',tags:['Monitor','Mentions'],badge:'free'},
+    {name:'TweetHunter',desc:'Twitter/X growth tool. Free analytics and post ideas.',url:'https://tweethunter.io',icon:'🐦',tags:['Twitter','Growth'],badge:'free'},
+    {name:'Pallyy',desc:'Free Instagram and TikTok scheduler with grid preview.',url:'https://pallyy.com',icon:'📱',tags:['Instagram','TikTok','Grid'],badge:'new'},
+    {name:'Flick Social',desc:'AI hashtag research and caption writing for Instagram.',url:'https://flick.social',icon:'✨',tags:['Hashtag AI','Caption'],badge:'free'},
+  ],
+  'audio':[
+    {name:'ElevenLabs',desc:'Best AI voice generator. 10 min/month free. Realistic voices.',url:'https://elevenlabs.io',icon:'🎙️',tags:['Best TTS','Realistic','10min/mo'],badge:'hot'},
+    {name:'Play.ht',desc:'AI voice generator with 900+ voices. Free 12,500 chars/month.',url:'https://play.ht',icon:'▶️',tags:['900+ Voices','Free'],badge:'hot'},
+    {name:'Murf AI',desc:'Studio quality AI voices. Free 10 min/month.',url:'https://murf.ai',icon:'🎤',tags:['Studio Quality','Free'],badge:'free'},
+    {name:'Speechify',desc:'Text to speech reader. Great for listening to articles.',url:'https://speechify.com',icon:'📢',tags:['Reader','Articles'],badge:'free'},
+    {name:'NaturalReader',desc:'Free text to speech with natural sounding voices.',url:'https://naturalreaders.com',icon:'📖',tags:['Natural','Free'],badge:'free'},
+    {name:'Suno AI',desc:'Generate full songs with vocals and music from text. Free.',url:'https://suno.com',icon:'🎵',tags:['Full Songs','Vocals','Free'],badge:'hot'},
+    {name:'Udio',desc:'AI music generation with lyrics. Free credits monthly.',url:'https://udio.com',icon:'🎸',tags:['Music + Lyrics','Free'],badge:'hot'},
+    {name:'Soundraw',desc:'Create royalty-free AI music for videos. Free plan.',url:'https://soundraw.io',icon:'🎼',tags:['Royalty Free','Video Music'],badge:'free'},
+    {name:'Adobe Podcast',desc:'Free AI audio enhancer — removes noise, improves voice quality.',url:'https://podcast.adobe.com',icon:'🎚️',tags:['Audio Enhance','Noise Remove'],badge:'hot'},
+    {name:'Cleanvoice',desc:'Remove filler words, silence from audio free. Podcast tool.',url:'https://cleanvoice.ai',icon:'🧹',tags:['Remove Fillers','Podcast'],badge:'free'},
+  ],
+  'caption':[
+    {name:'CapCut Auto Captions',desc:'Best free auto-subtitle tool. Works perfectly for Reels/TikTok.',url:'https://capcut.com',icon:'💬',tags:['Best','Reels','TikTok'],badge:'hot'},
+    {name:'Veed.io Subtitles',desc:'Auto-generate subtitles in 100+ languages free.',url:'https://veed.io/tools/auto-subtitle-generator',icon:'🌐',tags:['100+ Languages','Auto'],badge:'hot'},
+    {name:'Kapwing Subtitles',desc:'AI auto-captions for any video. Free with watermark.',url:'https://kapwing.com/subtitles',icon:'🤖',tags:['AI','Auto','Free'],badge:'free'},
+    {name:'Happy Scribe',desc:'Transcribe and subtitle videos. Free 10 min/month.',url:'https://happyscribe.com',icon:'😊',tags:['Transcribe','10min Free'],badge:'free'},
+    {name:'Clideo Subtitles',desc:'Add subtitles to video online free. Simple interface.',url:'https://clideo.com/add-subtitles-to-video',icon:'📝',tags:['Simple','Free','Online'],badge:'free'},
+    {name:'Maestra',desc:'AI subtitles in 80+ languages. Free with signup.',url:'https://maestra.ai',icon:'🎓',tags:['80+ Languages','AI'],badge:'new'},
+    {name:'Zubtitle',desc:'Auto captions for social media. Free 3 videos/month.',url:'https://zubtitle.com',icon:'📱',tags:['Social Media','3/month Free'],badge:'free'},
+    {name:'SubtitleBee',desc:'AI-powered subtitle generator. Free 15 min/month.',url:'https://subtitlebee.com',icon:'🐝',tags:['AI','15min Free'],badge:'free'},
+  ],
+  'pdf':[
+    {name:'ILovePDF',desc:'All-in-one free PDF tools. Convert, compress, merge, split.',url:'https://ilovepdf.com',icon:'❤️',tags:['All-in-one','Free','Best'],badge:'hot'},
+    {name:'SmallPDF',desc:'Easy PDF tools online. 2 free tasks per day.',url:'https://smallpdf.com',icon:'📄',tags:['Easy','2/day Free'],badge:'hot'},
+    {name:'PDF24',desc:'Completely free PDF tools — unlimited, no account needed.',url:'https://pdf24.org',icon:'🔢',tags:['Unlimited','No Account'],badge:'hot'},
+    {name:'Adobe Acrobat Free',desc:'Free PDF viewer and basic editing from Adobe.',url:'https://acrobat.adobe.com',icon:'📑',tags:['Adobe','Official'],badge:'free'},
+    {name:'Compress PDF',desc:'Reduce PDF file size free. Best compression quality.',url:'https://compress2go.com',icon:'🗜️',tags:['Compress','Best Quality'],badge:'free'},
+    {name:'ChatPDF',desc:'Chat with any PDF — ask questions, get summaries. Free.',url:'https://chatpdf.com',icon:'🤖',tags:['Chat AI','Summarize'],badge:'hot'},
+    {name:'PDF Escape',desc:'Edit PDF text and fill forms free online.',url:'https://pdfescape.com',icon:'🔓',tags:['Edit Text','Fill Forms'],badge:'free'},
+  ],
+  'face':[
+    {name:'Remini',desc:'Enhance old/blurry photos to HD. Free 5 daily. Best quality.',url:'https://remini.ai',icon:'✨',tags:['Best','HD','Old Photos'],badge:'hot'},
+    {name:'VanceAI Photo Restorer',desc:'Restore old damaged photos using AI. Free 3 images.',url:'https://vanceai.com/photo-restoration',icon:'🕰️',tags:['Restore','Old Photos'],badge:'hot'},
+    {name:'MyHeritage Photo Enhancer',desc:'Enhance and colorize old family photos free.',url:'https://myheritage.com/photo-enhancer',icon:'👨‍👩‍👧',tags:['Family Photos','Colorize'],badge:'hot'},
+    {name:'GFP-GAN',desc:'Free AI face restoration on Hugging Face. Academic quality.',url:'https://huggingface.co/spaces/akhaliq/GFPGAN',icon:'🎭',tags:['Open Source','Face Restore'],badge:'free'},
+    {name:'Picwish',desc:'AI photo enhancer and background remover. Free 3/day.',url:'https://picwish.com',icon:'💫',tags:['Enhance','BG Remove'],badge:'free'},
+    {name:'BioID',desc:'Face recognition and analysis tool.',url:'https://bioid.com',icon:'👤',tags:['Face AI','Analysis'],badge:'free'},
+  ],
+  'code':[
+    {name:'GitHub Copilot',desc:'AI code completion. Free for students and open source devs.',url:'https://github.com/features/copilot',icon:'🐙',tags:['Best','Code Complete','GitHub'],badge:'hot'},
+    {name:'Replit AI',desc:'Code, run and deploy with AI assistance free.',url:'https://replit.com',icon:'💻',tags:['Run','Deploy','AI'],badge:'hot'},
+    {name:'Codeium',desc:'Free AI code completion — works with all IDEs.',url:'https://codeium.com',icon:'⚡',tags:['All IDEs','Free','Unlimited'],badge:'hot'},
+    {name:'Tabnine',desc:'AI code assistant. Free basic tier for all developers.',url:'https://tabnine.com',icon:'📋',tags:['AI Complete','Free Tier'],badge:'free'},
+    {name:'Claude (coding)',desc:'Best AI for code review, debugging, and explanation.',url:'https://claude.ai',icon:'🤖',tags:['Code Review','Debug'],badge:'hot'},
+    {name:'ChatGPT (coding)',desc:'Excellent for coding help, debugging, and learning.',url:'https://chat.openai.com',icon:'💬',tags:['Debug','Learn','Help'],badge:'hot'},
+    {name:'Pieces for Developers',desc:'AI-powered code snippet manager. Free.',url:'https://pieces.app',icon:'🧩',tags:['Snippets','Manager'],badge:'new'},
+    {name:'Blackbox AI',desc:'Free AI code assistant and code search.',url:'https://useblackbox.io',icon:'⬛',tags:['Code Search','Free'],badge:'free'},
+  ],
+  'translate':[
+    {name:'DeepL',desc:'Best translation quality. Free 5000 chars limit. 30+ languages.',url:'https://deepl.com',icon:'🌍',tags:['Best Quality','5000 chars'],badge:'hot'},
+    {name:'Google Translate',desc:'Free translation for 100+ languages. Text, image, voice.',url:'https://translate.google.com',icon:'🔵',tags:['100+ Languages','Voice','Image'],badge:'hot'},
+    {name:'Reverso',desc:'Translation with context and examples. Free.',url:'https://reverso.net',icon:'↔️',tags:['Context','Examples'],badge:'free'},
+    {name:'Microsoft Translator',desc:'Free translation for 100 languages via Bing.',url:'https://translator.microsoft.com',icon:'🪟',tags:['Microsoft','100 Languages'],badge:'free'},
+    {name:'Google Lens',desc:'Scan text in images and translate instantly. Camera OCR.',url:'https://lens.google.com',icon:'👁️',tags:['Camera OCR','Instant'],badge:'hot'},
+    {name:'Simple OCR',desc:'Extract text from images free. No signup needed.',url:'https://www.onlineocr.net',icon:'📸',tags:['OCR','No Login'],badge:'free'},
+  ],
+  'music':[
+    {name:'Suno AI',desc:'Generate complete songs with vocals from text prompt. Free 50/day.',url:'https://suno.com',icon:'🎵',tags:['Songs','Vocals','50/day Free'],badge:'hot'},
+    {name:'Udio',desc:'AI music generation with lyrics. High quality. Free tier.',url:'https://udio.com',icon:'🎸',tags:['Quality','Lyrics','Free'],badge:'hot'},
+    {name:'Mubert',desc:'AI-generated music for videos and streams. Free tier.',url:'https://mubert.com',icon:'🎹',tags:['For Videos','Streaming'],badge:'free'},
+    {name:'Soundraw',desc:'Create and customize AI music for free. Royalty-free.',url:'https://soundraw.io',icon:'🎼',tags:['Customize','Royalty Free'],badge:'free'},
+    {name:'AIVA',desc:'AI music composition. Free 3 songs/month, download MP3.',url:'https://aiva.ai',icon:'🎻',tags:['Composition','3/month'],badge:'free'},
+    {name:'Boomy',desc:'Create AI music in seconds. Free unlimited creation.',url:'https://boomy.com',icon:'💥',tags:['Unlimited','Seconds'],badge:'free'},
+  ],
+  '3d':[
+    {name:'Canva (Logos)',desc:'Free logo maker with 1000s of templates.',url:'https://canva.com/logo-maker',icon:'🏷️',tags:['Logos','Templates','Free'],badge:'hot'},
+    {name:'Looka',desc:'AI logo generator. Free preview, paid download.',url:'https://looka.com',icon:'👁️',tags:['AI Logo','Preview Free'],badge:'free'},
+    {name:'Brandmark',desc:'AI brand identity generator — logo, colors, fonts.',url:'https://brandmark.io',icon:'🔖',tags:['Brand Identity','AI'],badge:'free'},
+    {name:'Spline',desc:'Free 3D design tool in browser. Create 3D scenes and objects.',url:'https://spline.design',icon:'🌀',tags:['3D Browser','Free'],badge:'hot'},
+    {name:'Shap-E (Hugging Face)',desc:'OpenAI\'s 3D model generator from text. Free on HF.',url:'https://huggingface.co/spaces/hysts/Shap-E',icon:'🎮',tags:['Text to 3D','OpenAI'],badge:'new'},
+    {name:'Krita',desc:'Free professional digital art and illustration software.',url:'https://krita.org',icon:'🖌️',tags:['Digital Art','Professional','Free'],badge:'free'},
+  ],
+  'research':[
+    {name:'Perplexity AI',desc:'AI research with live web sources. Best free research tool.',url:'https://perplexity.ai',icon:'🔍',tags:['Best','Live Web','Sources'],badge:'hot'},
+    {name:'Consensus',desc:'AI search for research papers and academic content.',url:'https://consensus.app',icon:'📚',tags:['Papers','Academic'],badge:'hot'},
+    {name:'Elicit',desc:'AI research assistant for literature review and papers.',url:'https://elicit.com',icon:'🔬',tags:['Literature Review','AI'],badge:'free'},
+    {name:'SciSpace',desc:'Explain research papers in simple language. Free.',url:'https://scispace.com',icon:'🚀',tags:['Explain Papers','Simple'],badge:'free'},
+    {name:'NotebookLM',desc:'Google\'s AI notebook — upload docs and ask questions.',url:'https://notebooklm.google.com',icon:'📓',tags:['Google','Upload Docs','Q&A'],badge:'hot'},
+    {name:'Summarize.tech',desc:'Summarize YouTube videos and web pages free.',url:'https://summarize.tech',icon:'⚡',tags:['YouTube','Summarize'],badge:'free'},
+  ],
+  'present':[
+    {name:'Gamma.app',desc:'AI presentation maker. Describe topic → full deck in seconds.',url:'https://gamma.app',icon:'⚡',tags:['Best','Seconds','AI'],badge:'hot'},
+    {name:'Beautiful.ai',desc:'AI-powered presentation design. Free limited slides.',url:'https://beautiful.ai',icon:'✨',tags:['Design AI','Free Tier'],badge:'free'},
+    {name:'Tome',desc:'AI storytelling and presentation tool. Free credits.',url:'https://tome.app',icon:'📖',tags:['Storytelling','AI','Free'],badge:'hot'},
+    {name:'Canva Presentations',desc:'Free presentation templates with AI features.',url:'https://canva.com/presentations',icon:'🎨',tags:['Templates','Free','AI'],badge:'hot'},
+    {name:'Google Slides AI',desc:'Google Slides with Gemini AI integrated. Free.',url:'https://slides.google.com',icon:'📊',tags:['Google','Gemini AI','Free'],badge:'free'},
+    {name:'SlidesAI',desc:'Create presentation slides from text using AI. Free 3/month.',url:'https://slidesai.io',icon:'🤖',tags:['Text to Slides','AI'],badge:'free'},
+  ],
+  'chatbot':[
+    {name:'ChatGPT',desc:'The OG AI chatbot by OpenAI. Free GPT-3.5, limited GPT-4.',url:'https://chat.openai.com',icon:'💬',tags:['OpenAI','Most Popular'],badge:'hot'},
+    {name:'Claude',desc:'Anthropic Claude — best for long documents and writing.',url:'https://claude.ai',icon:'🤖',tags:['Long Docs','Writing','Best'],badge:'hot'},
+    {name:'Google Gemini',desc:'Google\'s multimodal AI. Free, with image understanding.',url:'https://gemini.google.com',icon:'✨',tags:['Google','Images','Free'],badge:'hot'},
+    {name:'Microsoft Copilot',desc:'GPT-4 powered by Microsoft. Completely free, no limits.',url:'https://copilot.microsoft.com',icon:'🪟',tags:['GPT-4','No Limits','Free'],badge:'hot'},
+    {name:'Meta AI',desc:'Free AI in WhatsApp and Instagram. No separate app needed.',url:'https://meta.ai',icon:'📘',tags:['WhatsApp','Instagram'],badge:'new'},
+    {name:'Grok',desc:'Elon Musk\'s xAI chatbot. Free on X (Twitter).',url:'https://x.ai',icon:'⚡',tags:['xAI','Twitter/X'],badge:'new'},
+    {name:'Poe',desc:'Access multiple AI bots in one place. Free tier.',url:'https://poe.com',icon:'🐸',tags:['Multiple AIs','One App'],badge:'hot'},
+    {name:'HuggingChat',desc:'Free open-source chatbot with multiple model options.',url:'https://huggingface.co/chat',icon:'🤗',tags:['Open Source','Multiple Models'],badge:'free'},
+    {name:'Mistral AI',desc:'Fast European AI. Free, privacy-focused.',url:'https://chat.mistral.ai',icon:'💨',tags:['Fast','Privacy','European'],badge:'new'},
+    {name:'Groq',desc:'Fastest AI inference. Llama 3 and Mixtral free and instant.',url:'https://groq.com',icon:'⚡',tags:['Fastest','Llama 3','Free'],badge:'new'},
+  ],
+  'misc':[
+    {name:'Notion AI',desc:'AI writing inside Notion. Free with Notion account.',url:'https://notion.so/product/ai',icon:'📓',tags:['Notion','Writing'],badge:'hot'},
+    {name:'Otter.ai',desc:'Free AI meeting transcription. 300 min/month free.',url:'https://otter.ai',icon:'🦦',tags:['Transcribe','Meetings','300min'],badge:'hot'},
+    {name:'Beautiful.ai Resume',desc:'AI resume builder. Free template with AI suggestions.',url:'https://resume.io',icon:'📋',tags:['Resume','AI','Free'],badge:'free'},
+    {name:'Photomath',desc:'Scan math problem → get step by step solution free.',url:'https://photomath.com',icon:'📐',tags:['Math','Camera','Free'],badge:'hot'},
+    {name:'Midjourney (free)',desc:'Use Midjourney free prompts via Discord. Limited free.',url:'https://midjourney.com',icon:'🎨',tags:['Images','Discord'],badge:'hot'},
+    {name:'Durable',desc:'Build a website in 30 seconds with AI. Free plan.',url:'https://durable.co',icon:'🌐',tags:['Website','30 Seconds'],badge:'new'},
+    {name:'Tldraw',desc:'Free collaborative whiteboard with AI features.',url:'https://tldraw.com',icon:'✏️',tags:['Whiteboard','Collaborate'],badge:'free'},
+    {name:'Screen.studio',desc:'Beautiful screen recording with auto-zoom effects.',url:'https://screen.studio',icon:'🎥',tags:['Screen Record','Auto Effects'],badge:'new'},
+    {name:'Synthesia',desc:'Create AI avatar videos. Free 3 min/month.',url:'https://synthesia.io',icon:'🎭',tags:['Avatar Video','AI','3min Free'],badge:'hot'},
+    {name:'HeyGen',desc:'AI talking avatar video creator. Free 1 video/month.',url:'https://heygen.com',icon:'👤',tags:['Talking Avatar','1/month Free'],badge:'hot'},
+  ],
+};
+
+const TRENDING_TOOLS = [
+  {name:'Google Veo / Flow',cat:'AI Video Gen',icon:'🎥',url:'https://aistudio.google.com'},
+  {name:'Suno AI',cat:'AI Music',icon:'🎵',url:'https://suno.com'},
+  {name:'Kling AI',cat:'Video Gen',icon:'🎬',url:'https://klingai.com'},
+  {name:'Grok 3',cat:'AI Chatbot',icon:'⚡',url:'https://x.ai'},
+  {name:'Ideogram 2.0',cat:'AI Image',icon:'💡',url:'https://ideogram.ai'},
+  {name:'Adobe Firefly 3',cat:'AI Art',icon:'🔥',url:'https://firefly.adobe.com'},
+  {name:'Gamma.app',cat:'Presentations',icon:'⚡',url:'https://gamma.app'},
+  {name:'Perplexity AI',cat:'Research',icon:'🔍',url:'https://perplexity.ai'},
+];
+
+const NEW_TOOLS = [
+  {name:'Hailuo AI',cat:'Free Video Gen',icon:'🌊',url:'https://hailuoai.com'},
+  {name:'Meta AI (WhatsApp)',cat:'AI Chatbot',icon:'📘',url:'https://meta.ai'},
+  {name:'Viggle AI',cat:'Motion Video',icon:'🕺',url:'https://viggle.ai'},
+  {name:'NotebookLM',cat:'AI Research',icon:'📓',url:'https://notebooklm.google.com'},
+  {name:'Upscayl',cat:'4K Upscale',icon:'🆙',url:'https://upscayl.org'},
+  {name:'MiniMax Video',cat:'Video Gen',icon:'🎞️',url:'https://minimaxi.com'},
+];
+
+const CHAT_SUGGESTIONS = [
+  'I want to remove background from photo',
+  'Make my photo 4K quality',
+  'Create a video from text',
+  'Write captions for Instagram',
+  'Remove object from image',
+  'Generate AI music free',
+  'Translate text to Hindi',
+  'Make a presentation fast',
+  'Enhance old blurry photo',
+  'Add subtitles to video',
+];
+
+const AI_KNOWLEDGE = {
+  'remove background': {tools:['Remove.bg','Erase.bg','Photoroom','Clipdrop BG Remove'], url:'bgremove'},
+  'background': {tools:['Remove.bg','Erase.bg','Photoroom'], url:'bgremove'},
+  '4k': {tools:['Upscale.media','Let\'s Enhance','Waifu2x','ImgUpscaler'], url:'photo4k'},
+  'upscale': {tools:['Upscale.media','Let\'s Enhance','Clipdrop Upscale'], url:'photo4k'},
+  'enhance photo': {tools:['Remini','VanceAI','Upscale.media'], url:'photo4k'},
+  'video': {tools:['CapCut Web','Veed.io','Kapwing'], url:'video'},
+  'edit video': {tools:['CapCut Web','DaVinci Resolve','Clipchamp'], url:'video'},
+  'generate video': {tools:['Google Veo','Kling AI','Pika Labs','Runway ML'], url:'video-gen'},
+  'ai video': {tools:['Google Veo','Kling AI','Luma Dream Machine'], url:'video-gen'},
+  'veo': {tools:['Google Veo (Flow) — go to aistudio.google.com, sign in, use Veo model'], url:'video-gen'},
+  'flow': {tools:['Google Flow — part of AI Studio, use for video generation'], url:'video-gen'},
+  'caption': {tools:['CapCut Auto Captions','Veed.io','Kapwing Subtitles'], url:'caption'},
+  'subtitle': {tools:['CapCut Auto Captions','Veed.io Subtitles','Kapwing'], url:'caption'},
+  'write': {tools:['ChatGPT','Claude','Google Gemini','Copilot'], url:'ai-write'},
+  'chatgpt': {tools:['ChatGPT at chat.openai.com — free GPT-3.5, limited GPT-4'], url:'ai-write'},
+  'gemini': {tools:['Google Gemini at gemini.google.com — free, great for research'], url:'ai-write'},
+  'image': {tools:['Adobe Firefly','Bing Image Creator','Ideogram'], url:'aiart'},
+  'generate image': {tools:['Adobe Firefly (best quality)','Bing Image Creator (DALL-E 3 free)','Playground AI (500/day)'], url:'aiart'},
+  'ai art': {tools:['Adobe Firefly','Playground AI','NightCafe'], url:'aiart'},
+  'music': {tools:['Suno AI','Udio','Boomy'], url:'music'},
+  'song': {tools:['Suno AI — generates full songs free 50/day','Udio — high quality music AI'], url:'music'},
+  'voice': {tools:['ElevenLabs','Play.ht','Murf AI'], url:'audio'},
+  'text to speech': {tools:['ElevenLabs (best quality)','Play.ht','NaturalReader'], url:'audio'},
+  'pdf': {tools:['PDF24 (unlimited free)','ILovePDF','SmallPDF'], url:'pdf'},
+  'compress pdf': {tools:['PDF24','ILovePDF','SmallPDF — all free'], url:'pdf'},
+  'translate': {tools:['DeepL (best quality)','Google Translate','Microsoft Translator'], url:'translate'},
+  'old photo': {tools:['Remini (best)','MyHeritage Photo Enhancer','VanceAI Photo Restorer'], url:'face'},
+  'restore photo': {tools:['Remini','VanceAI Photo Restorer','MyHeritage'], url:'face'},
+  'code': {tools:['GitHub Copilot','Codeium','Claude AI'], url:'code'},
+  'presentation': {tools:['Gamma.app (best — AI makes full deck)','Tome','Canva'], url:'present'},
+  'slides': {tools:['Gamma.app','Google Slides with Gemini','Beautiful.ai'], url:'present'},
+  'logo': {tools:['Canva Logo Maker','Looka','Brandmark'], url:'3d'},
+  'social media': {tools:['Buffer','Later','Predis.ai'], url:'social'},
+  'hashtag': {tools:['Display Purposes (best for Instagram)','Hashtagify','Flick Social'], url:'social'},
+  'schedule': {tools:['Buffer (free 3 channels)','Later','Metricool'], url:'social'},
+  'research': {tools:['Perplexity AI (best)','Consensus','NotebookLM'], url:'research'},
+  'summarize': {tools:['Perplexity AI','Summarize.tech','NotebookLM'], url:'research'},
+  'face': {tools:['Remini','GFP-GAN','VanceAI'], url:'face'},
+};
+
+let favourites = JSON.parse(localStorage.getItem('ai-hub-favs') || '[]');
+let apiKey = localStorage.getItem('ai-hub-apikey') || '';
+let currentCat = null;
+let chatHistory = [];
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  const nb = document.getElementById('nav-'+p);
+  if(nb) nb.classList.add('active');
+  if(p === 'home') {showCategories(); document.getElementById('search-input').value = '';}
+  if(p === 'favourites') renderFavs();
+}
+
+function showCategories() {
+  document.getElementById('home-categories').style.display = 'block';
+  document.getElementById('tool-list').style.display = 'none';
+  document.getElementById('search-page').style.display = 'none';
+  currentCat = null;
+}
+
+function openCategory(catId) {
+  currentCat = catId;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const tools = TOOLS[catId] || [];
+  document.getElementById('home-categories').style.display = 'none';
+  document.getElementById('search-page').style.display = 'none';
+  document.getElementById('tool-list').style.display = 'block';
+  document.getElementById('tools-title').textContent = (cat ? cat.icon + ' ' + cat.name : 'Tools');
+  document.getElementById('tools-count').textContent = tools.length + ' free tools';
+  renderTools(tools, document.getElementById('tools-container'));
+}
+
+function renderTools(tools, container) {
+  container.innerHTML = tools.map(t => {
+    const isFav = favourites.includes(t.url);
+    const badgeHtml = t.badge === 'hot' ? '<span class="hot-badge">🔥 HOT</span>' :
+      t.badge === 'new' ? '<span class="new-badge">✨ NEW</span>' : '<span class="free-badge">FREE</span>';
+    return `<div class="tool-card" onclick="openTool('${t.url}')">
+      <div class="tool-icon" style="background:var(--bg3)">${t.icon}</div>
+      <div class="tool-info">
+        <div class="tool-name">${t.name} ${badgeHtml}</div>
+        <div class="tool-desc">${t.desc}</div>
+        <div class="tool-tags">${(t.tags||[]).map(g=>`<span class="tool-tag">${g}</span>`).join('')}</div>
+      </div>
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('${t.url}','${t.name}',this)">${isFav?'⭐':'🤍'}</button>
+    </div>`;
+  }).join('');
+}
+
+function openTool(url) {
+  window.open(url, '_blank');
+}
+
+function toggleFav(url, name, btn) {
+  const idx = favourites.indexOf(url);
+  if(idx === -1) { favourites.push(url); btn.textContent = '⭐'; showToast('Saved to favourites!'); }
+  else { favourites.splice(idx, 1); btn.textContent = '🤍'; showToast('Removed from saved'); }
+  localStorage.setItem('ai-hub-favs', JSON.stringify(favourites));
+}
+
+function renderFavs() {
+  const el = document.getElementById('fav-list');
+  if(!favourites.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-text">No saved tools yet.<br>Tap 🤍 on any tool to save it.</div></div>';
+    return;
+  }
+  const allTools = Object.values(TOOLS).flat();
+  const favTools = favourites.map(url => allTools.find(t => t.url === url)).filter(Boolean);
+  renderTools(favTools, el);
+}
+
+function showFavs() { showPage('favourites'); }
+
+function clearFavs() {
+  if(confirm('Clear all saved tools?')) {
+    favourites = [];
+    localStorage.removeItem('ai-hub-favs');
+    renderFavs();
+    showToast('Saved tools cleared');
+  }
+}
+
+function handleSearch(q) {
+  if(!q.trim()) { showCategories(); return; }
+  document.getElementById('home-categories').style.display = 'none';
+  document.getElementById('tool-list').style.display = 'none';
+  document.getElementById('search-page').style.display = 'block';
+  const ql = q.toLowerCase();
+  const allTools = Object.values(TOOLS).flat();
+  const results = allTools.filter(t =>
+    t.name.toLowerCase().includes(ql) ||
+    t.desc.toLowerCase().includes(ql) ||
+    (t.tags||[]).some(tg => tg.toLowerCase().includes(ql))
+  );
+  const el = document.getElementById('search-results');
+  if(!results.length) {
+    el.innerHTML = '<div class="no-results">No tools found for "'+q+'"<br><br>Try asking the AI Guide instead!</div>';
+  } else {
+    el.innerHTML = `<div style="font-size:12px;color:var(--text3);margin-bottom:10px">${results.length} results for "${q}"</div>`;
+    renderTools(results, el);
+  }
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  showCategories();
+}
+
+function renderCatGrid() {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="cat-card ${c.color}" onclick="openCategory('${c.id}')">
+      <span class="cat-icon">${c.icon}</span>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${c.count} free tools • ${c.desc}</div>
+    </div>`).join('');
+}
+
+function renderTrending() {
+  document.getElementById('trending-list').innerHTML = TRENDING_TOOLS.map((t,i) => `
+    <div class="trend-card" onclick="openTool('${t.url}')">
+      <div class="trend-rank">${String(i+1).padStart(2,'0')}</div>
+      <div style="font-size:24px">${t.icon}</div>
+      <div class="trend-info">
+        <div class="trend-name">${t.name}</div>
+        <div class="trend-cat">${t.cat}</div>
+      </div>
+      <span class="hot-badge">🔥 HOT</span>
+    </div>`).join('');
+
+  document.getElementById('new-list').innerHTML = NEW_TOOLS.map(t => `
+    <div class="trend-card" onclick="openTool('${t.url}')">
+      <div style="font-size:28px;min-width:36px">${t.icon}</div>
+      <div class="trend-info">
+        <div class="trend-name">${t.name}</div>
+        <div class="trend-cat">${t.cat}</div>
+      </div>
+      <span class="new-badge">✨ NEW</span>
+    </div>`).join('');
+}
+
+function renderChatSuggestions() {
+  document.getElementById('chat-suggestions').innerHTML = CHAT_SUGGESTIONS.slice(0,6).map(s =>
+    `<button class="sugg-chip" onclick="quickChat('${s}')">${s}</button>`).join('');
+}
+
+function addMessage(text, role) {
+  const msgs = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ' + role;
+  if(role === 'ai') {
+    wrap.innerHTML = `<div class="ai-label">🤖 AI Tools Guide</div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  } else {
+    wrap.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  }
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  return wrap;
+}
+
+function addLoading() {
+  const msgs = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ai';
+  wrap.innerHTML = `<div class="ai-label">🤖 AI Tools Guide</div><div class="msg-bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  return wrap;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const q = input.value.trim();
+  if(!q) return;
+  input.value = '';
+  addMessage(q, 'user');
+  const ld = addLoading();
+  chatHistory.push({role:'user', content: q});
+
+  if(apiKey) {
+    try {
+      const sysPrompt = `You are an expert AI tools guide helping users find the best FREE AI tools. You know about all categories: image editing, video tools, AI writing, 4K upscaling, background removal, AI art generation, social media tools, voice/audio, captions, PDF tools, AI video generation, face enhancement, coding, translation, AI music, 3D design, research, presentations, chatbots, and more. Always suggest specific free tools with URLs. Be concise and helpful. Format with line breaks for readability. Mention free tier details. Never suggest paid-only tools.`;
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:sysPrompt,messages:chatHistory})
+      });
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || 'Could not get response. Check API key in Settings.';
+      ld.remove();
+      addMessage(reply, 'ai');
+      chatHistory.push({role:'assistant', content: reply});
+    } catch(e) {
+      ld.remove();
+      addMessage(getLocalResponse(q), 'ai');
+    }
+  } else {
+    setTimeout(() => {
+      ld.remove();
+      addMessage(getLocalResponse(q), 'ai');
+    }, 700);
+  }
+}
+
+function getLocalResponse(q) {
+  const ql = q.toLowerCase();
+  for(const [key, val] of Object.entries(AI_KNOWLEDGE)) {
+    if(ql.includes(key)) {
+      return `For "${q}", here are the best free tools:\n\n${val.tools.map((t,i)=>`${i+1}. **${t}**`).join('\n')}\n\nTap the "${val.url}" category on the home screen to open and try them!\n\n💡 Tip: Add your Anthropic API key in Settings for smarter AI answers!`;
+    }
+  }
+  return `Here's how I can help you find free AI tools:\n\nTry asking me:\n• "Remove background from photo"\n• "Make my photo 4K quality"\n• "Create a video from text"\n• "Generate AI music free"\n• "Add subtitles to video"\n\nOr search any tool name at the top!\n\n💡 Add your free Anthropic API key in Settings for much smarter answers!`;
+}
+
+function quickChat(q) {
+  document.getElementById('chat-input').value = q;
+  sendChat();
+  document.getElementById('page-chatbot').scrollTop = 0;
+}
+
+function chatKeyDown(e) {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  apiKey = key;
+  localStorage.setItem('ai-hub-apikey', key);
+  showToast(key ? 'API key saved! AI Guide is now smarter.' : 'API key cleared');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function init() {
+  renderCatGrid();
+  renderTrending();
+  renderChatSuggestions();
+  if(apiKey) document.getElementById('api-key-input').value = apiKey;
+  addMessage(`👋 Hi! I'm your AI Tools Guide.\n\nI know 300+ free AI tools across 20 categories!\n\nTell me what you want to do — I'll find you the best free tool.\n\nExamples:\n• "I want to remove background from photo"\n• "Make my old photo 4K quality"\n• "Generate a video from text"\n• "Add subtitles to my video"\n\n💡 Add your free Anthropic API key in Settings for even smarter answers!`, 'ai');
+}
+
+init();
+</script>
+</body>
+</html>

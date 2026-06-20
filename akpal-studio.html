@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#D4537E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AkPal Studio">
+<meta name="description" content="AkPal Studio - Instagram Content Tool for Akash & Pallavi">
+<title>AkPal Studio 💕</title>
+<link rel="manifest" id="manifest-placeholder">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --primary: #D4537E;
+  --primary-dark: #b8436a;
+  --primary-light: #f07a9e;
+  --accent: #FF8FAB;
+  --gold: #FFD700;
+  --bg: #0d0d0d;
+  --bg2: #161616;
+  --bg3: #1e1e1e;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #f5f5f5;
+  --text2: #aaa;
+  --text3: #666;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 20px rgba(212,83,126,0.15);
+  --transition: 0.2s ease;
+}
+.light-mode {
+  --bg: #fdf5f7;
+  --bg2: #fff0f3;
+  --bg3: #ffe4ea;
+  --card: #ffffff;
+  --border: #f0d0d9;
+  --text: #1a0a10;
+  --text2: #6b3a4a;
+  --text3: #a07080;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); }
+#app { display:flex; flex-direction:column; height:100vh; max-width:420px; margin:0 auto; position:relative; overflow:hidden; }
+
+/* NAV */
+#bottom-nav {
+  display:flex; justify-content:space-around; align-items:center;
+  background:var(--card); border-top:1px solid var(--border);
+  padding:8px 0 max(8px, env(safe-area-inset-bottom)); z-index:100;
+  flex-shrink:0;
+}
+.nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 12px; cursor:pointer; border:none; background:none; color:var(--text3); transition:var(--transition); border-radius:12px; }
+.nav-btn.active { color:var(--primary); }
+.nav-btn .nav-icon { font-size:22px; line-height:1; }
+.nav-btn .nav-label { font-size:10px; font-weight:600; letter-spacing:0.3px; }
+.nav-btn.active .nav-icon { filter:drop-shadow(0 0 6px var(--primary)); }
+
+/* PAGES */
+#pages { flex:1; overflow:hidden; position:relative; }
+.page { position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; padding:0 0 20px; display:none; -webkit-overflow-scrolling:touch; }
+.page.active { display:block; }
+.page::-webkit-scrollbar { display:none; }
+
+/* HEADER */
+.page-header {
+  position:sticky; top:0; z-index:50;
+  background:var(--bg); border-bottom:1px solid var(--border);
+  padding:14px 16px 12px;
+  backdrop-filter:blur(10px);
+}
+.page-header h1 { font-family:'Playfair Display',serif; font-size:22px; color:var(--primary); }
+.page-header p { font-size:12px; color:var(--text2); margin-top:2px; }
+.header-row { display:flex; align-items:center; justify-content:space-between; }
+
+/* CARDS */
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px; margin:12px 16px 0;
+  position:relative; overflow:hidden;
+}
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+}
+.card-title { font-size:13px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; }
+.card-body { font-size:14px; color:var(--text); line-height:1.6; }
+.card-meta { font-size:11px; color:var(--text3); margin-top:8px; }
+
+/* BUTTONS */
+.btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:10px 18px; border-radius:50px; border:none; cursor:pointer;
+  font-size:13px; font-weight:600; transition:var(--transition); font-family:'Inter',sans-serif;
+}
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:active { background:var(--primary-dark); transform:scale(0.97); }
+.btn-ghost { background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+.btn-ghost:active { opacity:0.7; }
+.btn-sm { padding:7px 14px; font-size:12px; }
+.btn-icon { padding:8px; border-radius:12px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer; font-size:16px; line-height:1; transition:var(--transition); }
+.btn-icon:active { background:var(--primary); color:#fff; }
+.copy-btn {
+  position:absolute; top:12px; right:12px;
+  background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+  padding:5px 10px; font-size:11px; color:var(--text2); cursor:pointer;
+  display:flex; align-items:center; gap:4px; transition:var(--transition); font-family:'Inter',sans-serif;
+}
+.copy-btn:active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.fav-btn { position:absolute; bottom:12px; right:12px; background:none; border:none; font-size:18px; cursor:pointer; opacity:0.5; transition:var(--transition); }
+.fav-btn.saved { opacity:1; }
+
+/* CHIPS */
+.chips { display:flex; gap:8px; overflow-x:auto; padding:0 16px; margin:12px 0 4px; scrollbar-width:none; }
+.chips::-webkit-scrollbar { display:none; }
+.chip {
+  flex-shrink:0; padding:7px 14px; border-radius:50px; font-size:12px; font-weight:600;
+  border:1.5px solid var(--border); background:var(--card); color:var(--text2); cursor:pointer; transition:var(--transition); white-space:nowrap;
+}
+.chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.chip:active { transform:scale(0.95); }
+
+/* BADGE */
+.badge { display:inline-block; padding:3px 8px; border-radius:50px; font-size:10px; font-weight:700; background:var(--primary); color:#fff; }
+.badge-gold { background:var(--gold); color:#000; }
+.badge-green { background:#4caf50; color:#fff; }
+
+/* TOAST */
+#toast {
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--primary); color:#fff; padding:10px 20px; border-radius:50px;
+  font-size:13px; font-weight:600; z-index:999; opacity:0;
+  transition:all 0.3s ease; pointer-events:none; white-space:nowrap;
+  box-shadow:0 4px 20px rgba(212,83,126,0.4);
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* LOADING */
+.loading { display:flex; flex-direction:column; align-items:center; padding:40px 20px; gap:12px; }
+.spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { font-size:13px; color:var(--text2); }
+
+/* SECTION 1: TRENDING */
+.trend-card { margin:12px 16px 0; }
+.trend-source { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--text3); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.trend-source::before { content:''; display:block; width:8px; height:8px; border-radius:50%; background:var(--primary); }
+.trend-idea { font-size:14px; color:var(--text); line-height:1.5; padding-right:70px; }
+.trend-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.trend-tag { padding:3px 10px; border-radius:50px; background:var(--bg3); font-size:11px; color:var(--text2); border:1px solid var(--border); }
+
+/* SECTION 2: PROMPTS */
+.prompt-card { margin:12px 16px 0; }
+.prompt-text { font-size:13px; color:var(--text); line-height:1.6; padding-right:70px; margin-bottom:10px; }
+.prompt-platform { display:flex; gap:6px; flex-wrap:wrap; }
+.platform-label { font-size:10px; font-weight:700; padding:3px 8px; border-radius:50px; }
+.platform-chatgpt { background:rgba(16,163,127,0.15); color:#10a37f; border:1px solid rgba(16,163,127,0.3); }
+.platform-gemini { background:rgba(66,133,244,0.15); color:#4285f4; border:1px solid rgba(66,133,244,0.3); }
+
+/* SECTION 3: VIDEO BUILDER */
+.scene-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin:10px 0 0; position:relative; }
+.scene-number { width:28px; height:28px; border-radius:50%; background:var(--primary); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+.scene-text { font-size:13px; color:var(--text); line-height:1.6; padding-right:50px; }
+.selector-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+.selector-btn { padding:8px 14px; border-radius:50px; border:1.5px solid var(--border); background:var(--bg3); color:var(--text2); font-size:12px; font-weight:600; cursor:pointer; transition:var(--transition); font-family:'Inter',sans-serif; }
+.selector-btn.selected { background:var(--primary); color:#fff; border-color:var(--primary); }
+.video-input { width:100%; padding:14px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:var(--bg3); color:var(--text); font-size:14px; font-family:'Inter',sans-serif; resize:none; outline:none; transition:var(--transition); }
+.video-input:focus { border-color:var(--primary); }
+.trick-box { background:linear-gradient(135deg, rgba(212,83,126,0.1), rgba(255,143,171,0.05)); border:1.5px solid rgba(212,83,126,0.3); border-radius:var(--radius); padding:16px; margin:12px 16px 0; }
+.trick-title { font-size:13px; font-weight:700; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.trick-steps { font-size:13px; color:var(--text); line-height:1.8; }
+
+/* SECTION 4: CALENDAR */
+.cal-item { display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-bottom:1px solid var(--border); }
+.cal-date { flex-shrink:0; width:44px; text-align:center; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:6px 4px; }
+.cal-day { font-size:20px; font-weight:700; color:var(--primary); line-height:1; }
+.cal-month { font-size:9px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; }
+.cal-content { flex:1; min-width:0; }
+.cal-event { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.cal-idea { font-size:12px; color:var(--text2); line-height:1.5; margin-bottom:6px; }
+.cal-caption { font-size:11px; color:var(--text3); font-style:italic; line-height:1.4; }
+.cal-type { font-size:10px; font-weight:700; padding:2px 7px; border-radius:50px; }
+
+/* SECTION 5: PRIYA */
+#chat-messages { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:10px; }
+#chat-messages::-webkit-scrollbar { display:none; }
+.msg { max-width:85%; padding:12px 14px; border-radius:18px; font-size:13px; line-height:1.6; animation:msgIn 0.2s ease; }
+@keyframes msgIn { from { opacity:0; transform:translateY(8px); } }
+.msg-user { background:var(--primary); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+.msg-ai { background:var(--card); border:1px solid var(--border); color:var(--text); align-self:flex-start; border-bottom-left-radius:4px; }
+.msg-ai .msg-name { font-size:10px; font-weight:700; color:var(--primary); margin-bottom:4px; }
+.chat-input-area { padding:10px 16px max(12px, env(safe-area-inset-bottom)); background:var(--bg); border-top:1px solid var(--border); display:flex; gap:8px; align-items:flex-end; }
+.chat-input { flex:1; padding:10px 14px; border-radius:22px; border:1.5px solid var(--border); background:var(--card); color:var(--text); font-size:14px; font-family:'Inter',sans-serif; outline:none; resize:none; max-height:80px; line-height:1.4; transition:var(--transition); }
+.chat-input:focus { border-color:var(--primary); }
+.chat-send { width:42px; height:42px; border-radius:50%; background:var(--primary); border:none; color:#fff; font-size:18px; cursor:pointer; flex-shrink:0; transition:var(--transition); display:flex; align-items:center; justify-content:center; }
+.chat-send:active { background:var(--primary-dark); transform:scale(0.95); }
+.quick-chips { display:flex; gap:7px; overflow-x:auto; padding:8px 16px 0; scrollbar-width:none; }
+.quick-chips::-webkit-scrollbar { display:none; }
+.quick-chip { flex-shrink:0; padding:7px 13px; border-radius:50px; background:var(--card); border:1.5px solid var(--border); color:var(--text2); font-size:11px; font-weight:600; cursor:pointer; transition:var(--transition); white-space:nowrap; }
+.quick-chip:active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.priya-page { display:flex; flex-direction:column; height:100%; }
+
+/* SETTINGS */
+.settings-group { margin:16px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+.settings-item { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--border); gap:12px; }
+.settings-item:last-child { border-bottom:none; }
+.settings-label { font-size:14px; font-weight:500; color:var(--text); }
+.settings-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.settings-input { width:100%; padding:10px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:var(--bg3); color:var(--text); font-size:13px; font-family:'Inter',sans-serif; outline:none; transition:var(--transition); margin-top:8px; }
+.settings-input:focus { border-color:var(--primary); }
+.settings-item-full { flex-direction:column; align-items:flex-start; }
+.toggle { position:relative; width:48px; height:26px; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:var(--border); border-radius:50px; cursor:pointer; transition:var(--transition); }
+.toggle-slider::before { content:''; position:absolute; width:20px; height:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:var(--transition); }
+.toggle input:checked + .toggle-slider { background:var(--primary); }
+.toggle input:checked + .toggle-slider::before { transform:translateX(22px); }
+.settings-title { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:16px 16px 8px; }
+
+/* WEATHER WIDGET */
+.weather-pill { display:flex; align-items:center; gap:8px; padding:8px 14px; background:var(--card); border:1px solid var(--border); border-radius:50px; font-size:12px; color:var(--text2); }
+
+/* LOGO */
+.logo { font-family:'Playfair Display',serif; font-size:18px; background:linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+/* DIVIDER */
+.divider { height:1px; background:var(--border); margin:12px 16px; }
+
+/* EMPTY STATE */
+.empty { display:flex; flex-direction:column; align-items:center; padding:40px 20px; gap:10px; }
+.empty-icon { font-size:48px; }
+.empty-text { font-size:14px; color:var(--text2); text-align:center; }
+
+/* GRADIENT TEXT */
+.grad-text { background:linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+/* TYPING INDICATOR */
+.typing { display:flex; gap:4px; padding:12px 16px; align-self:flex-start; background:var(--card); border:1px solid var(--border); border-radius:18px; border-bottom-left-radius:4px; }
+.typing span { width:7px; height:7px; border-radius:50%; background:var(--text3); animation:bounce 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay:0.2s; }
+.typing span:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-6px); background:var(--primary); } }
+
+/* PRIYA HERO */
+.priya-hero { display:flex; align-items:center; gap:10px; padding:10px 16px; background:linear-gradient(135deg, rgba(212,83,126,0.1), rgba(255,143,171,0.05)); border-bottom:1px solid var(--border); flex-shrink:0; }
+.priya-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--accent)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:2px solid var(--primary); }
+.priya-info h3 { font-size:14px; font-weight:700; color:var(--text); }
+.priya-info p { font-size:11px; color:var(--primary); }
+.priya-status { width:8px; height:8px; border-radius:50%; background:#4caf50; margin-left:auto; flex-shrink:0; box-shadow:0 0 6px #4caf50; }
+
+/* SECTION LABEL */
+.section-label { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:16px 16px 8px; }
+
+/* REFRESH BTN */
+.refresh-btn { background:none; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:4px; transition:var(--transition); }
+.refresh-btn:active { color:var(--primary); transform:rotate(180deg); }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="pages">
+
+    <!-- PAGE 1: TRENDING -->
+    <div class="page active" id="page-trending">
+      <div class="page-header">
+        <div class="header-row">
+          <div>
+            <h1>🔥 Trending</h1>
+            <p>Viral ideas for Akash & Pallavi</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div id="weather-widget"></div>
+            <button class="refresh-btn" onclick="loadTrending()" title="Refresh">↻</button>
+          </div>
+        </div>
+      </div>
+      <div id="trending-content">
+        <div class="loading"><div class="spinner"></div><span class="loading-text">Trending data load ho rahi hai...</span></div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: PROMPTS -->
+    <div class="page" id="page-prompts">
+      <div class="page-header">
+        <h1>✨ Prompts</h1>
+        <p>AI prompts for ChatGPT & Gemini</p>
+      </div>
+      <div class="chips" id="prompt-chips">
+        <div class="chip active" onclick="switchPromptCat(this,'romance')">💕 Romance</div>
+        <div class="chip" onclick="switchPromptCat(this,'funny')">😂 Funny</div>
+        <div class="chip" onclick="switchPromptCat(this,'aesthetic')">🌸 Aesthetic</div>
+        <div class="chip" onclick="switchPromptCat(this,'reelhook')">🎬 Reel Hook</div>
+        <div class="chip" onclick="switchPromptCat(this,'caption')">✍️ Caption</div>
+        <div class="chip" onclick="switchPromptCat(this,'hashtag')"># Hashtag</div>
+        <div class="chip" onclick="switchPromptCat(this,'photoshoot')">📸 Photo Shoot</div>
+        <div class="chip" onclick="switchPromptCat(this,'travel')">✈️ Travel</div>
+      </div>
+      <div id="prompts-content"></div>
+    </div>
+
+    <!-- PAGE 3: VIDEO BUILDER -->
+    <div class="page" id="page-video">
+      <div class="page-header">
+        <h1>🎬 AI Video Builder</h1>
+        <p>30-sec Reels ke liye scene prompts</p>
+      </div>
+      <div style="padding:0 16px;">
+        <div class="trick-box">
+          <div class="trick-title">⚡ 30-Second Video Split Trick</div>
+          <div class="trick-steps">
+            <strong>3 scenes × 10 seconds = 1 viral Reel!</strong><br>
+            🎬 Scene 1 (0-10s): Hook — attention grab karo<br>
+            💕 Scene 2 (10-20s): Story — emotional moment<br>
+            🔥 Scene 3 (20-30s): Payoff — wow ending + CTA<br>
+            <em style="color:var(--text3)">Google Veo/Flow mein har scene separately generate karo!</em>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="section-label">Video ka idea type karo</div>
+          <textarea class="video-input" id="video-idea" rows="3" placeholder="e.g. Mumbai ke baarish mein hum dono ka romantic date..."></textarea>
+        </div>
+
+        <div class="section-label">Style</div>
+        <div class="selector-row" id="style-selector">
+          <button class="selector-btn selected" onclick="selectStyle(this,'Cinematic')">🎥 Cinematic</button>
+          <button class="selector-btn" onclick="selectStyle(this,'Aesthetic')">🌸 Aesthetic</button>
+          <button class="selector-btn" onclick="selectStyle(this,'Vlog')">📱 Vlog</button>
+          <button class="selector-btn" onclick="selectStyle(this,'Funny')">😂 Funny</button>
+          <button class="selector-btn" onclick="selectStyle(this,'Romantic')">💕 Romantic</button>
+        </div>
+
+        <div class="section-label">Mood / Lighting</div>
+        <div class="selector-row" id="mood-selector">
+          <button class="selector-btn selected" onclick="selectMood(this,'Golden hour')">🌅 Golden Hour</button>
+          <button class="selector-btn" onclick="selectMood(this,'Night lights')">🌃 Night Lights</button>
+          <button class="selector-btn" onclick="selectMood(this,'Natural light')">☀️ Natural Light</button>
+          <button class="selector-btn" onclick="selectMood(this,'Blue hour')">🌆 Blue Hour</button>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;margin-top:4px;justify-content:center;padding:14px;" onclick="generateVideoScenes()">
+          ✨ Generate 3 Scene Prompts
+        </button>
+      </div>
+      <div id="video-output" style="padding:0 16px;"></div>
+    </div>
+
+    <!-- PAGE 4: CALENDAR -->
+    <div class="page" id="page-calendar">
+      <div class="page-header">
+        <h1>📅 Content Calendar</h1>
+        <p>Next 60 days — Indian festivals & days</p>
+      </div>
+      <div id="calendar-content"></div>
+    </div>
+
+    <!-- PAGE 5: PRIYA AI -->
+    <div class="page" id="page-priya">
+      <div class="priya-page" style="height:100%;display:flex;flex-direction:column;">
+        <div class="priya-hero">
+          <div class="priya-avatar">🌸</div>
+          <div class="priya-info">
+            <h3>Priya — AI Manager</h3>
+            <p>Social Media Expert for AkPal</p>
+          </div>
+          <div class="priya-status"></div>
+        </div>
+        <div class="quick-chips" id="quick-chips">
+          <div class="quick-chip" onclick="sendQuick('Plan this week ka content')">📅 Plan this week</div>
+          <div class="quick-chip" onclick="sendQuick('Ek viral Reel hook likhke do')">🎬 Write Reel hook</div>
+          <div class="quick-chip" onclick="sendQuick('Best time to post on Instagram kab hai?')">⏰ Best time to post</div>
+          <div class="quick-chip" onclick="sendQuick('Hamare photo ke liye caption likhke do')">📸 Caption for photo</div>
+          <div class="quick-chip" onclick="sendQuick('Abhi konsa trending audio use karein?')">🎵 Trending audio</div>
+          <div class="quick-chip" onclick="sendQuick('Sawan ke liye content ideas do')">🌧️ Sawan ideas</div>
+          <div class="quick-chip" onclick="sendQuick('Travel content ke liye best hashtags do')">✈️ Hashtags for travel</div>
+          <div class="quick-chip" onclick="sendQuick('Page grow karne ke liye tips do')">📈 How to grow page</div>
+        </div>
+        <div id="chat-messages">
+          <div class="msg msg-ai">
+            <div class="msg-name">🌸 Priya</div>
+            Namaste Akash & Pallavi! 💕<br><br>
+            Main Priya hoon — aapki personal AI Social Media Manager! 🎉<br><br>
+            Main aapko help kar sakti hoon:<br>
+            • Weekly content plans<br>
+            • Viral Reel scripts & hooks<br>
+            • Captions in Hinglish<br>
+            • Hashtag strategy<br>
+            • Google Veo video prompts<br>
+            • Instagram growth tips<br><br>
+            Puchho kuch bhi! Neeche chips use karo ya khud type karo 👇
+          </div>
+        </div>
+        <div id="no-key-warning" style="display:none;background:rgba(212,83,126,0.1);border-top:1px solid rgba(212,83,126,0.2);padding:10px 16px;font-size:12px;color:var(--primary);text-align:center;flex-shrink:0;">
+          ⚙️ Settings mein Anthropic API key add karo to Priya AI use ho sake
+        </div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chat-input" placeholder="Priya se puchho kuch bhi..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="chat-send" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 6: SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <h1>⚙️ Settings</h1>
+        <p>AkPal Studio configure karo</p>
+      </div>
+
+      <div class="settings-title">Creator Info</div>
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">💕 Creators</div>
+            <div class="settings-sub">Akash & Pallavi</div>
+          </div>
+          <span class="badge">Mumbai</span>
+        </div>
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">📱 Niche</div>
+            <div class="settings-sub">Romance • Funny • Aesthetic • Travel • Day-in-life</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-title">AI Manager — Priya</div>
+      <div class="settings-group">
+        <div class="settings-item settings-item-full">
+          <div>
+            <div class="settings-label">🔑 Anthropic API Key</div>
+            <div class="settings-sub">Claude API key paste karo (free tier bhi kaam karta hai)</div>
+          </div>
+          <input type="password" class="settings-input" id="api-key-input" placeholder="sk-ant-..." oninput="saveApiKey(this.value)">
+          <div id="api-key-status" style="font-size:11px;color:var(--text3);margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <div class="settings-title">Appearance</div>
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">🌙 Dark Mode</div>
+            <div class="settings-sub">Romantic dark theme</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="dark-toggle" onchange="toggleDark(this.checked)" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-title">Data</div>
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">⭐ Saved Favourites</div>
+            <div class="settings-sub" id="fav-count">0 prompts saved</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearFavourites()">Clear</button>
+        </div>
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">💬 Chat History</div>
+            <div class="settings-sub">Current session</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearChat()">Clear</button>
+        </div>
+      </div>
+
+      <div class="settings-title">About</div>
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">AkPal Studio</div>
+            <div class="settings-sub">v1.0 • Made with 💕 for Akash & Pallavi</div>
+          </div>
+          <span class="badge-gold badge">PWA</span>
+        </div>
+      </div>
+
+      <div style="height:20px;"></div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('trending',this)">
+      <span class="nav-icon">🔥</span>
+      <span class="nav-label">Trending</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('prompts',this)">
+      <span class="nav-icon">✨</span>
+      <span class="nav-label">Prompts</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('video',this)">
+      <span class="nav-icon">🎬</span>
+      <span class="nav-label">Video</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('calendar',this)">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Calendar</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('priya',this)">
+      <span class="nav-icon">🌸</span>
+      <span class="nav-label">Priya</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('settings',this)">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Settings</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== STATE =====================
+let currentStyle = 'Cinematic';
+let currentMood = 'Golden hour';
+let currentPromptCat = 'romance';
+let chatHistory = [];
+let favourites = JSON.parse(localStorage.getItem('akpal_favs') || '[]');
+let apiKey = localStorage.getItem('akpal_api_key') || '';
+let darkMode = localStorage.getItem('akpal_dark') !== 'false';
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  setupApiKeyUI();
+  loadWeather();
+  loadTrending();
+  renderPrompts('romance');
+  renderCalendar();
+  updateFavCount();
+  setupPWA();
+  checkApiKey();
+});
+
+function setupPWA() {
+  // Inline manifest as blob
+  const manifest = {
+    name: "AkPal Studio",
+    short_name: "AkPal",
+    description: "Instagram Content Tool for Akash & Pallavi",
+    start_url: "./akpal-studio.html",
+    display: "standalone",
+    background_color: "#0d0d0d",
+    theme_color: "#D4537E",
+    orientation: "portrait",
+    icons: [
+      { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#D4537E"/><text x="96" y="130" font-size="100" text-anchor="middle">💕</text></svg>'), sizes: "192x192", type: "image/svg+xml" },
+      { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#D4537E"/><text x="256" y="350" font-size="270" text-anchor="middle">💕</text></svg>'), sizes: "512x512", type: "image/svg+xml" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  document.getElementById('manifest-placeholder').href = URL.createObjectURL(blob);
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE='akpal-v1';
+const ASSETS=['./akpal-studio.html'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./akpal-studio.html')))));
+    `;
+    const swBlob = new Blob([swCode], {type:'text/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+  }
+}
+
+// ===================== NAVIGATION =====================
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'settings') { updateFavCount(); setupApiKeyUI(); }
+  if (name === 'priya') { checkApiKey(); setTimeout(() => { const m = document.getElementById('chat-messages'); m.scrollTop = m.scrollHeight; }, 100); }
+}
+
+// ===================== THEME =====================
+function applyTheme() {
+  document.body.classList.toggle('light-mode', !darkMode);
+}
+function toggleDark(val) {
+  darkMode = val;
+  localStorage.setItem('akpal_dark', val);
+  applyTheme();
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ===================== COPY =====================
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('✅ Copied!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('✅ Copied!');
+  });
+}
+
+// ===================== FAVOURITES =====================
+function toggleFav(id, text) {
+  const idx = favourites.findIndex(f => f.id === id);
+  if (idx > -1) { favourites.splice(idx, 1); showToast('💔 Removed from favourites'); }
+  else { favourites.push({ id, text, date: new Date().toISOString() }); showToast('❤️ Saved to favourites!'); }
+  localStorage.setItem('akpal_favs', JSON.stringify(favourites));
+  updateFavCount();
+  const btn = document.querySelector(`[data-fav="${id}"]`);
+  if (btn) btn.classList.toggle('saved', idx === -1);
+}
+function isFav(id) { return favourites.some(f => f.id === id); }
+function clearFavourites() {
+  if (confirm('Saare favourites delete karein?')) {
+    favourites = []; localStorage.removeItem('akpal_favs');
+    document.querySelectorAll('.fav-btn').forEach(b => b.classList.remove('saved'));
+    updateFavCount(); showToast('🗑️ Favourites cleared');
+  }
+}
+function updateFavCount() {
+  const el = document.getElementById('fav-count');
+  if (el) el.textContent = `${favourites.length} prompts saved`;
+}
+
+// ===================== WEATHER =====================
+async function loadWeather() {
+  try {
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=19.07&longitude=72.87&current=temperature_2m,weathercode&timezone=Asia/Kolkata');
+    const d = await r.json();
+    const temp = Math.round(d.current.temperature_2m);
+    const code = d.current.weathercode;
+    const icon = code === 0 ? '☀️' : code <= 3 ? '⛅' : code <= 67 ? '🌧️' : code <= 77 ? '❄️' : '⛈️';
+    const widget = document.getElementById('weather-widget');
+    if (widget) widget.innerHTML = `<div class="weather-pill">${icon} ${temp}°C Mumbai</div>`;
+    
+    // Add weather-based idea
+    const ideas = {
+      rain: 'Baarish mein ek umbrella share karo — classic romantic shot! ☔',
+      sunny: 'Sunny day mein rooftop golden hour content banao! ☀️',
+      cloudy: 'Overcast light perfect hai moody aesthetic shots ke liye 📸',
+    };
+    const weatherIdea = code > 50 ? ideas.rain : code === 0 ? ideas.sunny : ideas.cloudy;
+    const weatherCard = `
+      <div class="card" style="margin:12px 16px 0;">
+        <div class="card-title">🌤️ Aaj Ka Weather Idea</div>
+        <div class="card-body">${weatherIdea}</div>
+        <div class="card-meta">Mumbai, aaj ke liye content suggestion</div>
+        <button class="copy-btn" onclick="copyText('${weatherIdea.replace(/'/g,"\\'")}')">📋 Copy</button>
+      </div>`;
+    const tc = document.getElementById('trending-content');
+    if (tc && !tc.querySelector('.weather-card')) {
+      tc.insertAdjacentHTML('afterbegin', `<div class="weather-card">${weatherCard}</div>`);
+    }
+  } catch(e) { console.log('Weather error:', e); }
+}
+
+// ===================== TRENDING =====================
+const viralIdeas = [
+  { source: 'Google Trends India', idea: '🎵 "Main Teri Hogayi" trend pe lip-sync karo — Akash propose kare Pallavi ko naye andaaz mein!', tags: ['#Trending', '#CoupleDance', '#Romantic'] },
+  { source: 'Google Trends India', idea: '🌧️ Sawan vibes — baarish mein chai aur pakode wali couple date content create karo!', tags: ['#Sawan2025', '#MonsoonVibes', '#IndianCouple'] },
+  { source: 'Reddit r/InstagramMarketing', idea: '📱 "Day in our life — Mumbai couple" vlog format is going viral! 24 hours challenge karo!', tags: ['#DayInMyLife', '#MumbaiCouple', '#Vlog'] },
+  { source: 'Google Trends India', idea: '💍 "When he knows your order by heart" trend — Akash order kare bina puchhe aur Pallavi shock ho jaye!', tags: ['#CoupleGoals', '#KnowsMe', '#Viral'] },
+  { source: 'Reddit r/reels', idea: '🎬 "POV: Dating your best friend" format — aap dono ki real friendship moments mix karo romance ke saath!', tags: ['#POV', '#BestFriends', '#CoupleContent'] },
+  { source: 'Google Trends India', idea: '🚂 Mumbai local mein date — Dadar se Marine Lines ka romantic Reel banao!', tags: ['#MumbaiLocal', '#CityDate', '#MumbaiDiaries'] },
+  { source: 'Reddit r/InstagramMarketing', idea: '✨ "Expectation vs Reality — couple goals" — funny take on Instagram perfect couples vs real life!', tags: ['#ExpectationVsReality', '#Relatable', '#CoupleHumor'] },
+  { source: 'Google Trends India', idea: '🎡 Essel World / Juhu beach date content — nostalgia trip with modern couple energy!', tags: ['#Mumbai', '#DateNight', '#BeachVibes'] },
+  { source: 'Reddit r/reels', idea: '💌 "Write a letter to your future self as a couple" trend — deep emotional content jo save karte hain log!', tags: ['#DeepContent', '#CoupleGoals', '#Emotional'] },
+  { source: 'Google Trends India', idea: '🍽️ "He cooks, she reacts" format using desi recipes — Akash cooks tadka dal, Pallavi ka reaction!', tags: ['#IndianFood', '#Cooking', '#Couple'] },
+];
+
+function loadTrending() {
+  const container = document.getElementById('trending-content');
+  container.innerHTML = `<div class="loading"><div class="spinner"></div><span class="loading-text">Trends fetch kar rahe hain...</span></div>`;
+  
+  setTimeout(() => {
+    let html = '<div class="section-label">🔥 Viral Content Ideas — Aaj Ke Liye</div>';
+    const shuffled = [...viralIdeas].sort(() => Math.random() - 0.5);
+    shuffled.forEach((item, i) => {
+      const id = `trend_${i}_${Date.now()}`;
+      html += `
+        <div class="card trend-card" style="margin:10px 16px 0;">
+          <div class="trend-source">${item.source}</div>
+          <div class="trend-idea">${item.idea}</div>
+          <div class="trend-tags">${item.tags.map(t => `<span class="trend-tag">${t}</span>`).join('')}</div>
+          <button class="copy-btn" onclick="copyText(\`${item.idea.replace(/`/g, '\\`')}\`)">📋 Copy</button>
+          <button class="fav-btn ${isFav(id)?'saved':''}" data-fav="${id}" onclick="toggleFav('${id}', \`${item.idea.replace(/`/g,'\\`')}\`)">⭐</button>
+        </div>`;
+    });
+    html += '<div style="height:10px;"></div>';
+    container.innerHTML = html;
+    loadWeather();
+  }, 800);
+}
+
+// ===================== PROMPTS =====================
+const promptData = {
+  romance: {
+    icon: '💕', title: 'Romance Prompts',
+    prompts: [
+      { text: 'Akash aur Pallavi ke liye ek 60-word romantic Instagram caption likhke do jo Marine Drive sunset dekhte waqt likha gaya ho. Hinglish mein, dil chhu le — na bahut filmy na bahut simple.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Hum dono Indian couple content creators hain Mumbai se. Hamari 3rd anniversary ke liye ek viral Reel script likhke do — emotional hook, middle mein funny moment, ending mein awww wala twist. Total 30 seconds.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Write 5 romantic Reel ideas for Indian couple creators that are NOT cliche — no flower petals, no slow-mo running. Akash & Pallavi ki real chemistry dikhao, Mumbai ki real locations ke saath. Hinglish captions bhi.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  funny: {
+    icon: '😂', title: 'Funny Prompts',
+    prompts: [
+      { text: 'Akash aur Pallavi ke liye 3 funny Reel ideas likho jo Indian couples se deeply relatable ho. "Ghar mein kaun remote control karta hai" ya "khaana order karte waqt" jaise real situations. Punchy Hinglish captions ke saath.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Write a comedy script for a 30-second Reel where Akash tries to surprise Pallavi but it hilariously backfires. Indian context, Mumbai setting, Hinglish dialogue, ending mein cute resolution.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Hamare liye 5 "Husband vs Wife" meme-style Reel hooks likhke do jo Indian audience ke liye super relatable ho. Instagram pe trending format mein, starting line must make people stop scrolling.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  aesthetic: {
+    icon: '🌸', title: 'Aesthetic Prompts',
+    prompts: [
+      { text: 'Akash aur Pallavi ke liye 5 aesthetic Instagram photo ideas do — cinematic couple poses, Mumbai ki underrated locations (not tourist-y), color palettes, and shot descriptions. Golden hour aur blue hour dono cover karo.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Ek "A to Z aesthetics guide" for Indian couple Instagram pages create karo — architecture shots, food styling tips, couple candids, drone-worthy locations near Mumbai, wardrobe coordination advice. Short aur actionable.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Mumbai mein 10 hidden aesthetic locations batao jahan couple photography ke liye perfect backgrounds ho — old Irani cafes, Art Deco buildings, fishing villages, colorful markets. Address aur best time of day ke saath.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  reelhook: {
+    icon: '🎬', title: 'Reel Hook Prompts',
+    prompts: [
+      { text: 'Mujhe 10 ultra-viral first-line Reel hooks do for Indian couple content creators. Har hook 5-8 words ka ho, curiosity ya emotion trigger kare, aur stop-scroll worthy ho. Mix of romantic, funny, aur relatable.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Write 5 "POV" style Reel hooks for Akash & Pallavi that feel personal and authentic — jaise "POV: Usse pata tha main kya chahta/chahti hoon bina puchhe." Make desi audience feel seen.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Create 7 Reel hooks using the "Nobody talks about this but..." or "Most couples don\'t know..." format for Indian audience. Topics: relationship green flags, Mumbai date spots, couple content tips. Hinglish.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  caption: {
+    icon: '✍️', title: 'Caption Prompts',
+    prompts: [
+      { text: 'Hamare liye 5 types of Instagram captions likhke do for couple content: (1) Witty one-liner, (2) Emotional 3-liner, (3) Funny + relatable, (4) Deep + thought-provoking, (5) Call-to-action wala. Sab Hinglish mein.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Akash & Pallavi ke ek beach date photo ke liye 3 different captions do: (1) Romantic (2) Funny (3) Aesthetic + poetic. Har caption mein emoji use karo aur CTA bhi shamil karo.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Write 10 short punchy captions (under 10 words each) for Indian couple reels in Hinglish. They should work for: travel, food dates, candid shots, anniversary, everyday moments. Add relevant emojis.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  hashtag: {
+    icon: '#', title: 'Hashtag Prompts',
+    prompts: [
+      { text: 'AkPal Studio Instagram page ke liye 30 hashtags do — mix of: high-competition (1M+), medium (100K-1M), niche low-competition (under 50K). Indian couple content pe focus. Categorize karo.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Mumbai couple creators ke liye 5 different hashtag sets do: (1) Travel content (2) Food date (3) Romantic Reel (4) Funny couple (5) Day-in-life vlog. Har set mein 15 hashtags, reach-optimized.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Explain karo Indian couple Instagram creators ke liye 2025 mein best hashtag strategy kya hai. Algorithm changes, reach vs engagement, branded hashtag kaise banayein. Actionable aur specific tips do.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  photoshoot: {
+    icon: '📸', title: 'Photo Shoot Prompts',
+    prompts: [
+      { text: 'Akash & Pallavi ke liye Mumbai mein ek full-day photo shoot plan banao: morning location, afternoon spot, evening golden hour, night shoot. Each location pe: best angle, outfit suggestion, 3 shot types. Practical aur doable.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: '10 unique couple poses ideas do jo Indian aesthetic ke saath align ho — no Western-only poses. Include: candid, cultural, foodie, travel, indoor, outdoor. Each pose ka mood aur caption idea bhi do.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Bina expensive gear ke achhi couple photography kaise karein — phone settings, natural lighting tips, free editing apps, posing guidance for non-models. Specifically for Akash & Pallavi creating Mumbai content.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+  travel: {
+    icon: '✈️', title: 'Travel Prompts',
+    prompts: [
+      { text: 'Akash & Pallavi ke liye 5 weekend getaways near Mumbai suggest karo jo Instagram-worthy ho — less touristy, more authentic. Har destination pe: best content spots, local food to try, 3 Reel ideas, travel tips.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Ek "couple travel series" plan banao for Indian Instagram creators — 6 destinations across India, unique couple activities, content themes for each location, 30-day posting plan. Budget-friendly focus.', platforms: ['ChatGPT', 'Gemini'] },
+      { text: 'Indian couple travel content ke liye viral Reel ideas do: airport moments, road trip content, hotel room reveals, local market exploration, food vlogging. Each idea mein hook, middle aur ending bhi batao.', platforms: ['ChatGPT', 'Gemini'] },
+    ]
+  },
+};
+
+function switchPromptCat(el, cat) {
+  document.querySelectorAll('#prompt-chips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentPromptCat = cat;
+  renderPrompts(cat);
+}
+
+function renderPrompts(cat) {
+  const data = promptData[cat];
+  const container = document.getElementById('prompts-content');
+  let html = `<div class="section-label">${data.icon} ${data.title}</div>`;
+  data.prompts.forEach((p, i) => {
+    const id = `prompt_${cat}_${i}`;
+    html += `
+      <div class="card prompt-card">
+        <div class="prompt-text">${p.text}</div>
+        <div class="prompt-platform">
+          ${p.platforms.map(pl => `<span class="platform-label platform-${pl.toLowerCase()}">${pl === 'ChatGPT' ? '🤖' : '✨'} ${pl}</span>`).join('')}
+        </div>
+        <button class="copy-btn" onclick="copyText(\`${p.text.replace(/`/g,'\\`')}\`)">📋 Copy</button>
+        <button class="fav-btn ${isFav(id)?'saved':''}" data-fav="${id}" onclick="toggleFav('${id}', \`${p.text.replace(/`/g,'\\`')}\`)">⭐</button>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ===================== VIDEO BUILDER =====================
+function selectStyle(btn, style) {
+  document.querySelectorAll('#style-selector .selector-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentStyle = style;
+}
+function selectMood(btn, mood) {
+  document.querySelectorAll('#mood-selector .selector-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentMood = mood;
+}
+
+async function generateVideoScenes() {
+  const idea = document.getElementById('video-idea').value.trim();
+  if (!idea) { showToast('⚠️ Pehle video idea type karo!'); return; }
+  
+  const output = document.getElementById('video-output');
+  output.innerHTML = `<div class="loading" style="padding:30px 0;"><div class="spinner"></div><span class="loading-text">Scenes generate ho rahe hain...</span></div>`;
+
+  // Try Claude API first, fallback to local generation
+  const apikey = localStorage.getItem('akpal_api_key');
+  if (apikey) {
+    try {
+      const prompt = `You are a Google Veo/Flow video prompt expert. Generate exactly 3 cinematic 10-second scene prompts for a 30-second Instagram Reel.
+
+Video idea: "${idea}"
+Style: ${currentStyle}
+Mood/Lighting: ${currentMood}
+Creators: Akash & Pallavi (Indian couple from Mumbai)
+
+Return ONLY a JSON array with 3 objects, each having:
+- "title": Short scene title (5-7 words)
+- "prompt": Detailed Veo prompt (40-60 words, technical, specific)
+- "duration": "10 seconds"
+- "hook": One-line description of what happens
+
+JSON only, no markdown, no explanation.`;
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apikey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data.content[0].text.replace(/```json|```/g,'').trim();
+        const scenes = JSON.parse(text);
+        renderScenes(scenes, idea);
+        return;
+      }
+    } catch(e) { console.log('Claude API error, using local generation'); }
+  }
+  
+  // Local fallback generation
+  generateScenesLocal(idea);
+}
+
+function generateScenesLocal(idea) {
+  const styleMap = {
+    'Cinematic': 'cinematic wide-angle shot, shallow depth of field, film grain, professional color grading',
+    'Aesthetic': 'soft pastel tones, dreamy bokeh, minimalist composition, Instagram aesthetic',
+    'Vlog': 'handheld camera movement, authentic candid feel, natural colors, documentary style',
+    'Funny': 'fast-paced cuts, exaggerated reactions, bright colors, comedic timing',
+    'Romantic': 'warm golden tones, soft focus, intimate framing, slow motion moments'
+  };
+  const moodMap = {
+    'Golden hour': 'golden hour lighting, warm amber glow, long shadows, magic hour sun',
+    'Night lights': 'city night lights, bokeh lights background, warm artificial lighting, urban glow',
+    'Natural light': 'soft natural daylight, window light, diffused shadows, clean crisp tones',
+    'Blue hour': 'blue hour twilight, cool blue tones, city lights beginning to glow'
+  };
+  
+  const styleDesc = styleMap[currentStyle] || styleMap['Cinematic'];
+  const moodDesc = moodMap[currentMood] || moodMap['Golden hour'];
+  
+  const scenes = [
+    {
+      title: `Scene 1: Hook — Attention Grab`,
+      prompt: `${currentStyle} opening shot of an Indian couple in Mumbai, ${idea.slice(0,40)}. ${moodDesc}. ${styleDesc}. Camera slowly pushes in. Duration: 10 seconds. Ultra HD, Instagram vertical 9:16 format.`,
+      duration: '10 seconds',
+      hook: 'Viewer ka pehla 3 seconds mein dhyan pakad lo'
+    },
+    {
+      title: `Scene 2: Story — Emotional Core`,
+      prompt: `${currentStyle} intimate middle scene, Indian couple sharing a genuine emotional moment, ${idea.slice(0,30)} continuation. ${moodDesc}. ${styleDesc}. Two-shot framing, authentic expressions, no posing. Mumbai backdrop. 10 seconds.`,
+      duration: '10 seconds',
+      hook: 'Connection dikhao — jab log "awww" bolein'
+    },
+    {
+      title: `Scene 3: Payoff — Wow Ending`,
+      prompt: `${currentStyle} finale shot, dramatic reveal or peak moment of ${idea.slice(0,35)}. ${moodDesc}. ${styleDesc}. Cinematic pull-back or close-up on reaction. End on a smile or kiss. Must feel like a satisfying conclusion. 10 seconds.`,
+      duration: '10 seconds',
+      hook: 'Save karne wala moment — aur CTA add karo'
+    }
+  ];
+  renderScenes(scenes, idea);
+}
+
+function renderScenes(scenes, idea) {
+  const output = document.getElementById('video-output');
+  let html = `
+    <div class="section-label" style="margin-top:16px;">🎬 Your 3-Scene Video Breakdown</div>
+    <div class="card" style="margin:0 0 10px;">
+      <div class="card-title">💡 Video Idea</div>
+      <div class="card-body">${idea}</div>
+      <div class="card-meta">${currentStyle} style • ${currentMood} mood</div>
+    </div>`;
+  
+  scenes.forEach((scene, i) => {
+    const id = `scene_${i}_${Date.now()}`;
+    html += `
+      <div class="scene-card" style="margin:0 0 10px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div class="scene-number">${i+1}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">${scene.title}</div>
+        </div>
+        <div class="scene-text">${scene.prompt}</div>
+        ${scene.hook ? `<div class="card-meta" style="margin-top:8px;">💡 ${scene.hook}</div>` : ''}
+        <button class="copy-btn" onclick="copyText(\`${scene.prompt.replace(/`/g,'\\`')}\`)" style="top:auto;bottom:12px;">📋 Copy</button>
+      </div>`;
+  });
+  
+  const fullScript = scenes.map((s,i) => `SCENE ${i+1}: ${s.title}\n${s.prompt}`).join('\n\n');
+  html += `
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin:4px 0 16px;" onclick="copyText(\`${fullScript.replace(/`/g,'\\`')}\`)">
+      📋 Copy All 3 Scenes
+    </button>`;
+  
+  output.innerHTML = html;
+}
+
+// ===================== CALENDAR =====================
+function renderCalendar() {
+  const today = new Date();
+  const events = getIndianEvents();
+  const container = document.getElementById('calendar-content');
+  
+  let html = '<div class="section-label">Indian Festivals & Social Media Days</div>';
+  
+  const displayed = [];
+  for (let d = 0; d < 60; d++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + d);
+    const key = `${date.getMonth()+1}-${date.getDate()}`;
+    const evt = events[key];
+    if (evt) {
+      displayed.push({ date, evt });
+    }
+  }
+  
+  if (displayed.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Agli events load ho rahi hain...</div></div>';
+  }
+  
+  displayed.forEach(({ date, evt }) => {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const typeColors = {
+      festival: 'background:rgba(255,165,0,0.15);color:#ffa500;',
+      social: 'background:rgba(66,133,244,0.15);color:#4285f4;',
+      couple: 'background:rgba(212,83,126,0.15);color:#D4537E;'
+    };
+    html += `
+      <div class="cal-item">
+        <div class="cal-date">
+          <div class="cal-day">${date.getDate()}</div>
+          <div class="cal-month">${months[date.getMonth()]}</div>
+        </div>
+        <div class="cal-content">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div class="cal-event">${evt.emoji} ${evt.name}</div>
+            <span class="cal-type" style="${typeColors[evt.type]||typeColors.social}">${evt.type}</span>
+          </div>
+          <div class="cal-idea">${evt.idea}</div>
+          <div class="cal-caption">"${evt.caption}"</div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:8px;padding:5px 12px;font-size:11px;" onclick="copyText('${evt.caption.replace(/'/g,"\\'")}')">📋 Copy Caption</button>
+        </div>
+      </div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+function getIndianEvents() {
+  return {
+    '6-21': { name: 'International Yoga Day', emoji: '🧘', type: 'social', idea: 'Couple yoga session — funny fails aur cute poses. "Healthy body, happy relationship!"', caption: 'Yoga karte hain toh zyada bakra pata chalta hai ek doosre ka 😂 But together, we breathe better. #YogaDay #CoupleGoals' },
+    '6-23': { name: 'International Widow\'s Day', emoji: '🕊️', type: 'social', idea: 'Gratitude post — appreciate your partner while you have them. Emotional, meaningful content.', caption: 'Har din ko treasure karo... kyunki zindagi short hai. Apne partner ko today hi bolo "I love you" 💕 #GratefulHeart' },
+    '6-30': { name: 'Social Media Day', emoji: '📱', type: 'social', idea: 'BTS of how Akash & Pallavi create their content — camera setup, editing process, bloopers!', caption: 'Social media ne humein ek doosre se milaya nahi, lekin aapko hamse zaroor milaya! 💕 Happy Social Media Day! #SocialMediaDay' },
+    '7-1': { name: 'National Doctor\'s Day', emoji: '🏥', type: 'social', idea: 'Funny reel — "Doctor said less stress, lekin isko dekh ke aur stress ho jata hai" couple humor!', caption: 'Tumhara pyaar meri best medicine hai 🏥💊 No prescription needed. #DoctorsDay #CoupleGoals' },
+    '7-4': { name: 'Sawan Begins', emoji: '🌧️', type: 'festival', idea: 'Sawan mein baarish date — chai, pakode, romantic Reel! Baarish ki awaaz background mein.', caption: 'Sawan ki pehli baarish mein tum... bas tumhare saath bheegna chahta/chahti hoon ☔💕 #Sawan #MonsoonLove #Romantic' },
+    '7-7': { name: 'World Chocolate Day', emoji: '🍫', type: 'social', idea: 'Chocolate blindfold taste test challenge — who knows the other\'s favorite! Fun & cute.', caption: 'Tumse meetha kuch nahi... okay maybe chocolate 🍫 But you\'re a close second! #ChocolateDay #Couple' },
+    '7-11': { name: 'World Population Day', emoji: '🌍', type: 'social', idea: '8 billion log hain duniya mein — aur main sirf tumhe dhundh raha/rahi tha. Romantic post!', caption: '8 billion people in the world aur meri kismat itni acchi thi ke tumse mila/mili 🌍💕 #WorldPopulationDay' },
+    '7-17': { name: 'World Emoji Day', emoji: '😍', type: 'social', idea: 'Tell your love story using ONLY emojis — audience guess kare! Engagement strategy perfect hai.', caption: 'Hamari love story in emojis: 👀❤️😊💍🏠👶... aapka guess? 😂 #WorldEmojiDay #CoupleStory' },
+    '7-21': { name: 'Guru Purnima', emoji: '🙏', type: 'festival', idea: 'Grateful post — "partner jo sabse bada guru hai life mein" emotional aur meaningful content.', caption: 'Mera sabse bada guru mera partner hai — life ke har lesson mein saath tha/thi 🙏💕 #GuruPurnima #Grateful' },
+    '7-26': { name: 'Kargil Vijay Diwas', emoji: '🇮🇳', type: 'festival', idea: 'Patriotic couple content — Indian flag, national pride, salute our heroes together.', caption: 'Desh ke liye pyaar sabse bada pyaar hai 🇮🇳 Jai Hind! Happy Kargil Vijay Diwas 🇮🇳 #KargilVijayDiwas' },
+    '8-1': { name: 'Friendship Day', emoji: '🤝', type: 'couple', idea: '"My partner is my best friend" content — cute moments, inside jokes, BFF + lover combo!', caption: 'Best friend + partner = jackpot! 🎰💕 Yaar ke saath romance, aur romance mein yaar ki yaari! #FriendshipDay #CoupleGoals' },
+    '8-5': { name: 'National Handloom Day', emoji: '🧵', type: 'social', idea: 'Traditional couple look — matching Indian outfits, handloom saree + kurta aesthetic content!', caption: 'Desi vibes, modern love ✨ Hamare desh ki traditions ko celebrate karte hain! #HandloomDay #IndianCouple #DesiAesthetic' },
+    '8-9': { name: 'Nagpanchami', emoji: '🐍', type: 'festival', idea: 'Indian festival celebration content — puja at home, traditional setup, festive vibes!', caption: 'Nag Devta ki kripa bani rahe — aur iss Nagpanchami ke din aapke ghar mein khushiyan aayein 🙏🐍 #Nagpanchami' },
+    '8-12': { name: 'International Youth Day', emoji: '🌟', type: 'social', idea: '"Young couple, big dreams" content — goals, aspirations, what we want to achieve together!', caption: 'Jawaan hain, sapne bade hain, aur saath hain — baaki kya chahiye? 🌟💕 #YouthDay #CoupleGoals #YoungLove' },
+    '8-15': { name: 'Independence Day', emoji: '🇮🇳', type: 'festival', idea: 'Patriotic couple content — kite flying, Indian flag, desh bhakti + couple vibes!', caption: '75 saal ki azaadi... aur hamare pyaar ko bhi azaad hone do! 🇮🇳🕊️ Jai Hind! #IndependenceDay #ProudIndian' },
+    '8-16': { name: 'Raksha Bandhan', emoji: '🎀', type: 'festival', idea: 'Sweet content about protecting your partner — "tu meri raksha karega?" cute couple twist!', caption: 'Tum meri raksha karo, main tumhara ghar banaungi/banaunga 🎀💕 Happy Raksha Bandhan to every protective partner! #RakshaBandhan' },
+    '8-19': { name: 'World Photography Day', emoji: '📷', type: 'social', idea: 'BTS of couple photoshoot — how you pose, how you edit, favorite shots ever!', caption: 'Har photo ek memory hai... aur har memory mein tum ho 📷💕 Happy World Photography Day! #PhotographyDay #CouplePhotography' },
+    '8-26': { name: 'Ganesh Chaturthi', emoji: '🐘', type: 'festival', idea: 'Ganpati celebration content — modak making together, puja setup, Mumbai vibe!', caption: 'Ganpati Bappa Morya! 🐘 Is Ganeshotsav mein aapke ghar mein khushiyan aur pyaar ka aagman ho 💕 #GaneshChaturthi #Mumbai' },
+  };
+}
+
+// ===================== PRIYA AI CHAT =====================
+function checkApiKey() {
+  const key = localStorage.getItem('akpal_api_key');
+  const warning = document.getElementById('no-key-warning');
+  if (warning) warning.style.display = key ? 'none' : 'block';
+}
+
+function setupApiKeyUI() {
+  const input = document.getElementById('api-key-input');
+  const status = document.getElementById('api-key-status');
+  const key = localStorage.getItem('akpal_api_key') || '';
+  if (input) input.value = key;
+  if (status) status.textContent = key ? '✅ API key saved hai' : '⚠️ Key nahi hai — Priya basic mode mein kaam karegi';
+}
+
+function saveApiKey(val) {
+  if (val.startsWith('sk-ant-')) {
+    localStorage.setItem('akpal_api_key', val);
+    const status = document.getElementById('api-key-status');
+    if (status) status.textContent = '✅ API key saved!';
+    apiKey = val;
+    checkApiKey();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 80) + 'px';
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function sendQuick(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  input.value = '';
+  input.style.height = 'auto';
+  
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  
+  const typing = addTyping();
+  
+  const apikey = localStorage.getItem('akpal_api_key');
+  
+  if (!apikey) {
+    setTimeout(() => {
+      typing.remove();
+      const fallback = getFallbackResponse(text);
+      addMessage('ai', fallback);
+      chatHistory.push({ role: 'assistant', content: fallback });
+    }, 1000);
+    return;
+  }
+  
+  try {
+    const systemPrompt = `Tu "Priya" hai — Akash aur Pallavi ka personal AI Social Media Manager. Tu ek expert Indian social media consultant hai jo Instagram pe couple content ke baare mein jaanti hai sab kuch.
+
+Creators: Akash & Pallavi (Indian couple content creators)
+Location: Mumbai, India
+Niche: Romance, Funny, Aesthetic, Travel, Day-in-life
+Platform: Instagram Reels, Stories, Feed
+Language: Hinglish (Hindi + English mix naturally — jaise real Indians bolte hain)
+
+Tu hamesha:
+- Hinglish mein baat karti hai (genuine mix, not forced)
+- Specific aur actionable advice deti hai
+- Mumbai/Indian context use karti hai
+- Akash & Pallavi ko naam se refer karti hai
+- Emojis use karti hai naturally
+- Practical Instagram tips deti hai jo kaam karein 2025 mein
+- Reel scripts, captions, hashtags, content ideas, video prompts sab likh sakti hai
+- Google Veo/Flow ke liye cinematic prompts bana sakti hai
+
+Tu unki best friend + expert manager hai. Warmly baat kar, lekin professional bhi reh.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apikey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    
+    typing.remove();
+    
+    if (response.ok) {
+      const data = await response.json();
+      const reply = data.content[0].text;
+      addMessage('ai', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } else if (response.status === 401) {
+      addMessage('ai', '❌ API key galat hai ya expire ho gayi. Settings mein ja ke naya key paste karo. 🔑');
+    } else {
+      throw new Error('API error ' + response.status);
+    }
+  } catch (e) {
+    typing.remove();
+    const fallback = getFallbackResponse(text);
+    addMessage('ai', fallback);
+    chatHistory.push({ role: 'assistant', content: fallback });
+  }
+  
+  const msgs = document.getElementById('chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function getFallbackResponse(text) {
+  const t = text.toLowerCase();
+  if (t.includes('plan') || t.includes('week')) {
+    return `Akash & Pallavi ke liye is hafte ka plan 📅\n\nSomvar: Morning routine Reel — "Our Monday motivation"\nMangalvar: Throwback photo post\nBudhwar: Reel — funny couple moment\nGuruvar: Aesthetic photo dump\nShukravar: Date night Reel\nShanivaar: Q&A Stories\nRavivar: Rest + planning next week\n\n💡 Roz ek Story zaroor post karo — engagement badhta hai!\n\nAPI key add karo for personalized advice! ⚙️`;
+  }
+  if (t.includes('hook') || t.includes('reel')) {
+    return `Viral Reel Hooks for AkPal 🎬\n\n1. "Inhone socha main nahi jaanta/jaanti... but I knew everything 👀"\n2. "3 saal mein humne yeh realize kiya..."\n3. "POV: Tumhara partner tumhara best friend bhi ho"\n4. "Main tumhe bata du ek secret..."\n5. "Nobody talks about this in Indian relationships..."\n\nHook ko pehle 3 seconds mein deliver karo! Time matters most 🔑`;
+  }
+  if (t.includes('hashtag')) {
+    return `AkPal ke liye Best Hashtags 2025 # \n\nHigh reach:\n#CoupleGoals #IndianCouple #ReelsIndia #LoveIndia\n\nMedium:\n#MumbaiCouple #HindiCouple #DesiCouple #IndianLove\n\nNiche:\n#AkPalStudio #MumbaiDiaries #IndianContentCreator\n\n💡 Tip: 5 big + 5 medium + 5 niche = best formula!\nHar post pe alag set use karo for better reach 📈`;
+  }
+  if (t.includes('time') || t.includes('post')) {
+    return `Best Posting Times for Indian Instagram 📊\n\nWeekdays:\n🌅 7-9 AM (Morning commute)\n🌙 8-10 PM (Evening relaxation)\n\nWeekend:\n🌞 10 AM-12 PM (Late morning)\n🌆 6-8 PM (Evening time)\n\nBest days: Tuesday, Wednesday, Thursday\nAvoid: Sunday morning\n\n💡 Pallavi ya Akash jo bhi post kare — consistency important hai! Roz ek story minimum karo 🎯`;
+  }
+  return `Namaste! 🌸 Main Priya hun — Akash & Pallavi ki AI Social Media Manager!\n\nSettings mein Anthropic API key add karo for fully personalized advice. Tab main tumhe custom content plans, Reel scripts, captions, aur bahut kuch de sakti hoon!\n\nAbhi ke liye quick tip: Mumbai ke monsoon mein content gold hai — baarish + chai + tum dono = viral formula! ☔💕\n\nKya help chahiye? ⬇️`;
+}
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+  if (role === 'ai') {
+    div.innerHTML = `<div class="msg-name">🌸 Priya</div>${text.replace(/\n/g,'<br>')}`;
+  } else {
+    div.textContent = text;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function clearChat() {
+  if (confirm('Chat history clear karein?')) {
+    const msgs = document.getElementById('chat-messages');
+    msgs.innerHTML = `
+      <div class="msg msg-ai">
+        <div class="msg-name">🌸 Priya</div>
+        Namaste Akash & Pallavi! 💕 Chat clear ho gayi. Phir se shuru karte hain! Main hoon yahan aapki help ke liye 🌸
+      </div>`;
+    chatHistory = [];
+    showToast('💬 Chat cleared!');
+  }
+}
+
+// Init
+renderPrompts('romance');
+</script>
+</body>
+</html>

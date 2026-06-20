@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FFCCD5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MamaCare AI">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FF7E98'/%3E%3Cpath d='M50 78s-26-15-34-31C9 33 14 19 27 17c7-1 13 3 16 8 3-5 9-9 16-8 13 2 18 16 11 30-8 16-20 31-20 31z' fill='white'/%3E%3C/svg%3E">
+<title>MamaCare AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFFBF2;
+    --coral:#FF7E98;
+    --coral-soft:var(--border-soft);
+    --coral-deep:#FF5C82;
+    --sunshine:#FFC93C;
+    --sunshine-soft:#FFF3D6;
+    --sunshine-deep:#F0A500;
+    --mint:#4FCB8F;
+    --mint-soft:#DFF7EA;
+    --mint-deep:#1E8A57;
+    --lavender:#9B87E8;
+    --lavender-soft:#ECE6FB;
+    --lavender-deep:#6A4FC4;
+    --charcoal:#4A3B45;
+    --charcoal-soft:#8C7C86;
+    --white:#FFFFFF;
+    --safe-bg:#DFF7EA;
+    --safe-text:#1E8A57;
+    --safe-border:#A8E6C4;
+    --warn-bg:#FFE3E0;
+    --warn-text:#D8473F;
+    --warn-border:#F5B8B0;
+    --surface-soft:#FFF8F0;
+    --input-bg:#FFFCF8;
+    --input-border:#FFE0E8;
+    --border-soft:#FFE3EA;
+    --card-border:#FBEDE9;
+    --track-bg:#F4E3E7;
+  }
+  #app-shell[data-theme="dark"]{
+    --cream:#241B22;
+    --white:#322631;
+    --charcoal:#F5E9EE;
+    --charcoal-soft:#BCA8B5;
+    --surface-soft:#3A2C38;
+    --input-bg:#3A2C38;
+    --input-border:#4A3A47;
+    --border-soft:#3A2C38;
+    --card-border:#43333F;
+    --track-bg:#3A2C38;
+    --coral-soft:#4A2E38;
+    --lavender-soft:#332A47;
+    background:var(--cream);
+  }
+  body.dark-bg{background:linear-gradient(180deg,#1A1119 0%,#241B22 100%);}
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#FFE2EA 0%,#FFF4D9 100%);
+    font-family:'DM Sans','Noto Sans Devanagari',sans-serif;
+    color:var(--charcoal);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .font-display{font-family:'Fraunces','Noto Sans Devanagari',serif;}
+  #app-shell{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--cream);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 0 60px rgba(255,92,130,0.16);
+    overflow-x:hidden;
+  }
+  @media (min-width:481px){
+    body{padding:24px 0;}
+    #app-shell{min-height:90vh;border-radius:36px;overflow:hidden;}
+  }
+  .disclaimer-banner{
+    background:linear-gradient(90deg,var(--coral-deep),var(--sunshine-deep));
+    color:#fff;
+    font-size:11.5px;
+    font-weight:600;
+    text-align:center;
+    padding:8px 14px;
+    line-height:1.4;
+    position:sticky;
+    top:0;
+    z-index:40;
+  }
+  .app-header{
+    padding:18px 16px 8px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .app-header-title{flex:1;min-width:0;overflow:hidden;}
+  .app-header-title p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lang-switcher{display:flex;gap:2px;background:var(--coral-soft);padding:3px;border-radius:999px;flex-shrink:0;}
+  .lang-btn{border:none;background:none;font-size:11px;font-weight:700;padding:6px 7px;border-radius:999px;color:var(--charcoal-soft);cursor:pointer;font-family:'DM Sans','Noto Sans Devanagari',sans-serif;transition:all .15s ease;min-width:28px;}
+  .lang-btn.active{background:var(--coral-deep);color:#fff;}
+  .theme-toggle{border:none;background:var(--coral-soft);width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .mic-btn{background:var(--coral-soft);border:none;border-radius:12px;width:42px;height:42px;flex-shrink:0;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s ease;}
+  .mic-btn.listening{background:#FF4D4D;color:#fff;animation:micPulse 1s ease-in-out infinite;}
+  @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0.4);}50%{box-shadow:0 0 0 8px rgba(255,77,77,0);}}
+  #view-container{
+    flex:1;
+    overflow-y:auto;
+    padding:4px 16px 18px;
+  }
+  .tab-view{display:none;}
+  .tab-view.active{display:block;animation:fadeIn .3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .section-title{font-size:19px;font-weight:600;margin:6px 0 16px;}
+  #tab-diet .section-title{color:var(--mint-deep);}
+  #tab-vitals .section-title{color:var(--coral-deep);}
+  #tab-clinic .section-title{color:var(--lavender-deep);}
+  #tab-chat .section-title{color:var(--sunshine-deep);}
+  #bottom-nav{
+    position:sticky;
+    bottom:0;
+    background:var(--white);
+    border-top:1px solid var(--border-soft);
+    display:flex;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    z-index:30;
+  }
+  .nav-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    background:none;
+    border:none;
+    padding:6px 2px;
+    cursor:pointer;
+    color:var(--charcoal-soft);
+    font-size:10.5px;
+    font-weight:600;
+    border-radius:14px;
+    transition:all .2s ease;
+  }
+  .nav-btn svg{width:22px;height:22px;}
+  .nav-btn.active{color:var(--coral-deep);background:var(--coral-soft);}
+  .card{
+    background:var(--white);
+    border-radius:20px;
+    padding:18px;
+    box-shadow:0 4px 16px rgba(255,92,130,0.10);
+    border:1px solid var(--card-border);
+  }
+  .btn-primary{
+    background:var(--coral-deep);
+    color:#fff;
+    font-weight:600;
+    font-size:13.5px;
+    border:none;
+    border-radius:14px;
+    padding:11px 18px;
+    cursor:pointer;
+    transition:transform .15s ease;
+    white-space:nowrap;
+  }
+  .btn-primary:active{transform:scale(0.96);}
+  .btn-secondary{
+    background:var(--coral-soft);
+    color:var(--coral-deep);
+    border:none;
+    font-weight:600;
+    font-size:13.5px;
+    border-radius:14px;
+    padding:10px 16px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .input-field{
+    width:100%;
+    border:1.5px solid var(--input-border);
+    background:var(--input-bg);
+    border-radius:12px;
+    padding:10px 14px;
+    font-family:inherit;
+    font-size:16px;
+    outline:none;
+  }
+  .input-field:focus{border-color:var(--coral-deep);}
+  .result-box{border-radius:14px;padding:12px 14px;font-size:13.5px;font-weight:600;margin-top:10px;animation:fadeIn .3s ease;}
+  .result-box.safe{background:var(--safe-bg);color:var(--safe-text);border:1px solid var(--safe-border);}
+  .result-box.warn{background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border);}
+  .meal-label{font-size:13px;font-weight:700;color:var(--charcoal);}
+  .meal-list{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px;}
+  .meal-item{display:flex;justify-content:space-between;align-items:center;background:var(--surface-soft);border-radius:10px;padding:8px 12px;font-size:13px;gap:8px;}
+  .meal-item button{background:none;border:none;color:#E8748F;cursor:pointer;font-size:13px;flex-shrink:0;}
+  .meal-empty{font-size:12px;color:var(--charcoal-soft);font-style:italic;padding:4px 2px;}
+  .symptom-row{display:flex;align-items:center;gap:10px;background:var(--surface-soft);border-radius:12px;padding:10px 12px;font-size:13.5px;cursor:pointer;border:1.5px solid transparent;}
+  .symptom-row.redflag{border-color:#F5B8B0;}
+  .symptom-row input{width:17px;height:17px;accent-color:var(--coral-deep);flex-shrink:0;}
+  .hero-fruit-circle{width:140px;height:140px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--sunshine-soft) 0%,var(--coral-soft) 70%);padding:24px;}
+  .progress-track{height:8px;border-radius:999px;background:var(--track-bg);overflow:hidden;}
+  .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sunshine),var(--coral-deep));}
+  .fruit-strip{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 14px;}
+  .fruit-badge{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto;opacity:.55;}
+  .fruit-badge.current{opacity:1;}
+  .fruit-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--coral-soft);border:2px solid transparent;padding:10px;}
+  .fruit-badge.current .fruit-circle{width:72px;height:72px;border-color:var(--coral-deep);box-shadow:0 0 0 6px rgba(255,92,130,0.20);animation:gentlePulse 2.4s ease-in-out infinite;}
+  @keyframes gentlePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+  .fruit-badge span{font-size:10px;font-weight:600;color:var(--charcoal-soft);}
+  .fruit-badge.current span{color:var(--coral-deep);font-size:11px;}
+  .chat-row{display:flex;margin-bottom:10px;}
+  .chat-row.user{justify-content:flex-end;}
+  .bubble{max-width:78%;padding:10px 14px;border-radius:16px;font-size:13.5px;line-height:1.45;}
+  .chat-row.user .bubble{background:var(--coral-deep);color:#fff;border-bottom-right-radius:4px;}
+  .chat-row.ai .bubble{background:var(--lavender-soft);color:var(--charcoal);border-bottom-left-radius:4px;}
+  .typing-dots{display:inline-flex;gap:3px;}
+  .typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--coral-deep);opacity:.5;animation:blink 1.2s infinite;}
+  .typing-dots span:nth-child(2){animation-delay:.2s;}
+  .typing-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+  .emergency-overlay{position:fixed;inset:0;z-index:100;background:rgba(60,15,15,0.55);display:flex;align-items:center;justify-content:center;padding:24px;}
+  .emergency-overlay.hidden{display:none;}
+  .emergency-card{background:#fff;border-radius:24px;padding:28px 22px;max-width:380px;width:100%;text-align:center;border:3px solid #E0453F;animation:pulseGlow 1.6s ease-in-out infinite;}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,69,63,0.35);}50%{box-shadow:0 0 0 14px rgba(224,69,63,0);}}
+  .hidden{display:none !important;}
+  ::-webkit-scrollbar{width:0;height:0;}
+</style>
+</head>
+<body>
+<div id="app-shell">
+
+  <div class="disclaimer-banner" data-i18n="disclaimerText">⚠️ Educational wellness guide only. Consult your gynecologist for medical concerns.</div>
+
+  <header class="app-header">
+    <div style="width:38px;height:38px;border-radius:50%;background:var(--coral-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FF5C82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9.2C.7 8.3 2.4 4.5 6 4c2-.3 3.6.8 4.5 2.2C11.4 4.8 13 3.7 15 4c3.6.5 5.3 4.3 3.5 7.8C20 16.4 12 21 12 21z"/></svg>
+    </div>
+    <div class="app-header-title">
+      <p class="font-display" style="font-size:19px;font-weight:600;line-height:1;margin:0;">MamaCare <span style="color:var(--coral-deep);">AI</span></p>
+      <p data-i18n="subtitle" style="font-size:11px;color:var(--charcoal-soft);margin:3px 0 0;">your happy pregnancy companion 😊</p>
+    </div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn" data-lang="hi" onclick="setLanguage('hi')">हिं</button>
+      <button class="lang-btn" data-lang="mr" onclick="setLanguage('mr')">मर</button>
+    </div>
+    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+  </header>
+
+  <main id="view-container">
+
+    <!-- ============ DASHBOARD ============ -->
+    <section id="tab-dashboard" class="tab-view active">
+      <div id="home-screen-tip" class="card" style="margin-bottom:14px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--lavender-soft);">
+        <p data-i18n="addToHomeHint" style="font-size:11px;color:var(--lavender-deep);margin:0;line-height:1.4;">📲 Tip: tap your browser menu and choose 'Add to Home Screen' to use this like an app.</p>
+        <button onclick="document.getElementById('home-screen-tip').style.display='none'" aria-label="Dismiss" style="background:none;border:none;color:var(--lavender-deep);font-size:16px;cursor:pointer;flex-shrink:0;line-height:1;">✕</button>
+      </div>
+      <div class="card" style="text-align:center;margin-bottom:16px;background:linear-gradient(160deg,var(--sunshine-soft),var(--coral-soft));">
+        <p data-i18n="weekLabel" style="font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--coral-deep);text-transform:uppercase;margin:0;">Month 3 · Week 12</p>
+        <div class="progress-track" style="margin:12px 0;"><div class="progress-fill" style="width:30%;"></div></div>
+        <p data-i18n="weeksLeft" style="font-size:11px;color:var(--charcoal-soft);margin:0;">12 of 40 weeks · 28 weeks to go</p>
+      </div>
+
+      <div class="card" style="text-align:center;margin-bottom:18px;">
+        <p data-i18n="babyThisWeek" style="font-size:12px;color:var(--charcoal-soft);font-weight:600;margin:0 0 10px;">YOUR BABY THIS WEEK</p>
+        <div class="hero-fruit-circle" id="hero-fruit"></div>
+        <p data-i18n="babySize" class="font-display" style="font-size:21px;font-weight:600;margin:14px 0 0;">Your baby is the size of a Lemon 🍋</p>
+        <p data-i18n="milestoneText" style="font-size:13px;color:var(--charcoal-soft);margin:8px 0 0;line-height:1.5;">Baby's bones are beginning to harden, and tiny fingernails are forming!</p>
+      </div>
+
+      <div style="margin-bottom:4px;display:flex;align-items:baseline;justify-content:space-between;">
+        <p data-i18n="growthJourney" class="font-display" style="font-size:16px;font-weight:600;margin:0;">Growth Journey</p>
+        <p data-i18n="scrollHint" style="font-size:11px;color:var(--charcoal-soft);margin:0;">scroll →</p>
+      </div>
+      <div class="fruit-strip" id="fruit-strip"></div>
+    </section>
+
+    <!-- ============ DIET TRACKER ============ -->
+    <section id="tab-diet" class="tab-view">
+      <p data-i18n="dietTitle" class="font-display section-title">Diet Tracker</p>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="breakfastLabel" class="meal-label">🥣 Breakfast</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" class="input-field meal-input" data-meal="breakfast" data-i18n-placeholder="breakfastPlaceholder" placeholder="e.g. Oatmeal with berries" onkeydown="if(event.key==='Enter')logMeal('breakfast')">
+          <button data-i18n="logBtn" class="btn-secondary" onclick="logMeal('breakfast')">Log</button>
+        </div>
+        <ul class="meal-list" id="list-breakfast"></ul>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="lunchLabel" class="meal-label">🍽️ Lunch</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" class="input-field meal-input" data-meal="lunch" data-i18n-placeholder="lunchPlaceholder" placeholder="e.g. Dal, rice & sabzi" onkeydown="if(event.key==='Enter')logMeal('lunch')">
+          <button data-i18n="logBtn" class="btn-secondary" onclick="logMeal('lunch')">Log</button>
+        </div>
+        <ul class="meal-list" id="list-lunch"></ul>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="dinnerLabel" class="meal-label">🍲 Dinner</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" class="input-field meal-input" data-meal="dinner" data-i18n-placeholder="dinnerPlaceholder" placeholder="e.g. Khichdi with curd" onkeydown="if(event.key==='Enter')logMeal('dinner')">
+          <button data-i18n="logBtn" class="btn-secondary" onclick="logMeal('dinner')">Log</button>
+        </div>
+        <ul class="meal-list" id="list-dinner"></ul>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div>
+          <p data-i18n="waterLabel" class="meal-label">💧 Water Intake</p>
+          <p style="font-size:20px;font-weight:700;margin:4px 0 0;" id="water-count">0 / 8 Glasses</p>
+        </div>
+        <button data-i18n="addGlassBtn" class="btn-primary" style="background:var(--mint-deep);" onclick="addWater()">+ Glass</button>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="scannerTitle" class="meal-label">🔬 AI Food Safety Scanner</p>
+        <p data-i18n="scannerDesc" style="font-size:12px;color:var(--charcoal-soft);margin:4px 0 10px;">Type an ingredient to check if it's pregnancy-safe.</p>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="food-input" class="input-field" data-i18n-placeholder="scannerPlaceholder" placeholder="e.g. Papaya, Sushi, Paneer" onkeydown="if(event.key==='Enter')checkFoodSafety()">
+          <button id="food-mic-btn" type="button" class="mic-btn" onclick="if(window.startMic)startMic('food-mic-btn','food-input')" aria-label="Voice input">🎤</button>
+          <button data-i18n="checkBtn" class="btn-primary" onclick="checkFoodSafety()">Check</button>
+        </div>
+        <div id="food-result"></div>
+      </div>
+    </section>
+
+    <!-- ============ VITALS & FITNESS ============ -->
+    <section id="tab-vitals" class="tab-view">
+      <p data-i18n="vitalsTitle" class="font-display section-title">Vitals & Fitness</p>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="weightLabel" class="meal-label">⚖️ Weight Tracker</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="number" id="weight-input" class="input-field" data-i18n-placeholder="weightPlaceholder" placeholder="Weight in kg" step="0.1" onkeydown="if(event.key==='Enter')logWeight()">
+          <button data-i18n="logBtn" class="btn-primary" onclick="logWeight()">Log</button>
+        </div>
+        <ul id="weight-history" class="meal-list"></ul>
+      </div>
+
+      <div class="card" style="text-align:center;margin-bottom:14px;">
+        <p data-i18n="kickLabel" class="meal-label">👣 Kick Counter</p>
+        <p id="kick-timer" style="font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin:10px 0 4px;">00:00</p>
+        <p style="font-size:12px;color:var(--charcoal-soft);margin:0 0 14px;"><span data-i18n="kicksColon">Kicks:</span> <span id="kick-count" style="font-weight:700;color:var(--coral-deep);">0</span></p>
+
+        <button id="kick-tap-btn" class="hidden" onclick="addKick()" style="width:96px;height:96px;border-radius:50%;background:var(--sunshine-soft);border:3px solid var(--sunshine-deep);font-size:34px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">👣</button>
+
+        <div id="kick-controls-start"><button data-i18n="startSession" class="btn-primary" onclick="startKickSession()">Start Session</button></div>
+        <div id="kick-controls-save" class="hidden"><button data-i18n="saveSession" class="btn-secondary" onclick="saveKickSession()">Save Session</button></div>
+
+        <ul id="kick-history" class="meal-list" style="text-align:left;margin-top:14px;"></ul>
+      </div>
+
+      <div class="card" style="text-align:center;margin-bottom:14px;">
+        <p data-i18n="contractionLabel" class="meal-label">⏱️ Contraction Timer</p>
+        <p id="contraction-timer" style="font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin:10px 0 4px;">00:00</p>
+        <div id="contraction-controls-start"><button data-i18n="startContraction" class="btn-primary" style="background:var(--lavender-deep);" onclick="startContraction()">Start Contraction</button></div>
+        <div id="contraction-controls-end" class="hidden"><button data-i18n="endContraction" class="btn-secondary" style="background:var(--lavender-soft);color:var(--lavender-deep);" onclick="endContraction()">End Contraction</button></div>
+        <p data-i18n="contractionNote" style="font-size:11px;color:var(--charcoal-soft);margin:12px 0 0;line-height:1.5;">Track duration and gap between contractions. Discuss any concerning patterns with your doctor right away.</p>
+        <ul id="contraction-history" class="meal-list" style="text-align:left;margin-top:14px;"></ul>
+      </div>
+    </section>
+
+    <!-- ============ CLINIC ASSISTANT ============ -->
+    <section id="tab-clinic" class="tab-view">
+      <p data-i18n="clinicTitle" class="font-display section-title">Clinic Assistant</p>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="symptomCheckLabel" class="meal-label">📋 Today's Symptom Check</p>
+        <div id="symptom-list" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <button data-i18n="generateSummaryBtn" class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="generateSummary()">Generate Gynecologist Summary</button>
+
+      <div id="summary-output" class="card hidden"></div>
+    </section>
+
+    <!-- ============ AI COMPANION CHAT ============ -->
+    <section id="tab-chat" class="tab-view">
+      <p data-i18n="chatTitle" class="font-display section-title">AI Companion</p>
+      <div id="chat-window" style="height:min(360px,45vh);overflow-y:auto;padding:6px 2px 10px;"></div>
+      <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border-soft);">
+        <input type="text" id="chat-input" class="input-field" data-i18n-placeholder="chatPlaceholder" placeholder="Tell me how you're feeling..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button id="chat-mic-btn" type="button" class="mic-btn" onclick="if(window.startMic)startMic('chat-mic-btn','chat-input')" aria-label="Voice input">🎤</button>
+        <button data-i18n="sendBtn" class="btn-primary" onclick="sendChat()">Send</button>
+      </div>
+    </section>
+
+  </main>
+
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>
+      <span data-i18n="navHome">Home</span>
+    </button>
+    <button class="nav-btn" data-tab="diet" onclick="switchTab('diet')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-3 0-5 2.2-5 5.5S9 21 12 21s5-3.2 5-7.5S15 8 12 8Z"/><path d="M12 8c0-2 1-3 3-3"/></svg>
+      <span data-i18n="navDiet">Diet</span>
+    </button>
+    <button class="nav-btn" data-tab="vitals" onclick="switchTab('vitals')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9.2C.7 8.3 2.4 4.5 6 4c2-.3 3.6.8 4.5 2.2C11.4 4.8 13 3.7 15 4c3.6.5 5.3 4.3 3.5 7.8C20 16.4 12 21 12 21z"/></svg>
+      <span data-i18n="navVitals">Vitals</span>
+    </button>
+    <button class="nav-btn" data-tab="clinic" onclick="switchTab('clinic')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8 11h8M8 15h5"/></svg>
+      <span data-i18n="navClinic">Clinic</span>
+    </button>
+    <button class="nav-btn" data-tab="chat" onclick="switchTab('chat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5z"/></svg>
+      <span data-i18n="navChat">AI Chat</span>
+    </button>
+  </nav>
+
+</div>
+
+<div id="emergency-overlay" class="emergency-overlay hidden">
+  <div class="emergency-card">
+    <p style="font-size:34px;margin:0;">🚨</p>
+    <p data-i18n="emergencyTitle" class="font-display" style="font-size:17px;font-weight:700;color:#B5302A;margin:10px 0;line-height:1.4;">EMERGENCY ALERT</p>
+    <p data-i18n="emergencyMsg" style="font-size:13.5px;color:var(--charcoal);line-height:1.5;margin:0 0 18px;">Critical red flag symptoms detected. Please contact emergency services or head to the nearest hospital immediately!</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <a href="tel:112" data-i18n="emergencyCall" style="background:#E0453F;color:#fff;font-weight:700;padding:13px;border-radius:14px;text-decoration:none;font-size:14px;">📞 Call Emergency (112)</a>
+      <a href="tel:102" data-i18n="emergencyAmbulance" style="background:#fff;color:#B5302A;font-weight:700;padding:13px;border-radius:14px;border:1.5px solid #E0453F;text-decoration:none;font-size:14px;">🚑 Call Ambulance (102)</a>
+      <button data-i18n="findHospital" onclick="findNearestHospital()" style="background:#6A4FC4;color:#fff;font-weight:700;padding:13px;border-radius:14px;border:none;font-size:14px;cursor:pointer;">🏥 Find Nearest Hospital</button>
+      <button data-i18n="emergencyClose" onclick="closeEmergencyOverlay()" style="background:none;border:none;color:var(--charcoal-soft);font-size:12px;margin-top:4px;cursor:pointer;text-decoration:underline;">I understand, close this</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ STATE ============ */
+const state = {
+  lang: 'en',
+  theme: 'light',
+  meals: { breakfast: [], lunch: [], dinner: [] },
+  water: 0,
+  weightHistory: [],
+  kick: { active:false, count:0, seconds:0, timerId:null, sessions:[] },
+  contraction: { active:false, seconds:0, timerId:null, startTs:null, sessions:[] },
+  symptomsChecked: new Set(),
+  lastSummaryText: ''
+};
+const WEEK_NUMBER = 12;
+const LOCALE_MAP = { en:'en-IN', hi:'hi-IN', mr:'mr-IN' };
+
+/* ============ TRANSLATIONS ============ */
+const TRANSLATIONS = {
+  en: {
+    disclaimerText: "⚠️ Educational wellness guide only. Consult your gynecologist for medical concerns.",
+    subtitle: "your happy pregnancy companion 😊",
+    navHome: "Home", navDiet: "Diet", navVitals: "Vitals", navClinic: "Clinic", navChat: "AI Chat",
+    weekLabel: "Month 3 · Week 12",
+    weeksLeft: "12 of 40 weeks · 28 weeks to go",
+    babyThisWeek: "YOUR BABY THIS WEEK",
+    babySize: "Your baby is the size of a Lemon 🍋",
+    milestoneText: "Baby's bones are beginning to harden, and tiny fingernails are forming!",
+    growthJourney: "Growth Journey",
+    scrollHint: "scroll →",
+    dietTitle: "Diet Tracker",
+    breakfastLabel: "🥣 Breakfast", lunchLabel: "🍽️ Lunch", dinnerLabel: "🍲 Dinner",
+    breakfastPlaceholder: "e.g. Oatmeal with berries",
+    lunchPlaceholder: "e.g. Dal, rice & sabzi",
+    dinnerPlaceholder: "e.g. Khichdi with curd",
+    logBtn: "Log",
+    waterLabel: "💧 Water Intake", glassesUnit: "Glasses", addGlassBtn: "+ Glass",
+    scannerTitle: "🔬 AI Food Safety Scanner",
+    scannerDesc: "Type an ingredient to check if it's pregnancy-safe.",
+    scannerPlaceholder: "e.g. Papaya, Sushi, Paneer",
+    checkBtn: "Check",
+    safeResult: "✅ Safe: Generally safe to consume in moderation. Ensure it's fully cooked!",
+    warnResult: "❌ Avoid: Potential foodborne risks or uterine contractions.",
+    vitalsTitle: "Vitals & Fitness",
+    weightLabel: "⚖️ Weight Tracker", weightPlaceholder: "Weight in kg", noEntries: "No entries yet",
+    kickLabel: "👣 Kick Counter", kicksColon: "Kicks:", startSession: "Start Session", saveSession: "Save Session",
+    noSessions: "No sessions yet", kicksWord: "kicks",
+    clinicTitle: "Clinic Assistant", symptomCheckLabel: "📋 Today's Symptom Check",
+    sym_nausea: "Nausea", sym_fatigue: "Fatigue", sym_backache: "Mild Backache", sym_ankles: "Swollen Ankles",
+    sym_pain: "Severe Abdominal Pain", sym_spotting: "Spotting/Bleeding", sym_vision: "Blurred Vision",
+    generateSummaryBtn: "Generate Gynecologist Summary",
+    summaryHeader: "📝 Questions for Your Gynecologist",
+    noSymptomsMsg: "No symptoms checked today — just a routine check-in.",
+    generatedOnPrefix: "Generated on", weekWord: "Week",
+    emergencyTitle: "EMERGENCY ALERT",
+    emergencyMsg: "Critical red flag symptoms detected. Please contact emergency services or head to the nearest hospital immediately!",
+    emergencyCall: "📞 Call Emergency (112)", emergencyAmbulance: "🚑 Call Ambulance (102)", emergencyClose: "I understand, close this",
+    chatTitle: "AI Companion", chatPlaceholder: "Tell me how you're feeling...", sendBtn: "Send",
+    chatGreeting: "Hi, I'm here for you 🌸 Tell me how you're feeling today, or ask me anything about pregnancy wellness, food, sleep, or exercise.",
+    emptyMeal: "Nothing logged yet",
+    aiThinking: "Thinking...",
+    shareWhatsapp: "📤 Share on WhatsApp",
+    findHospital: "🏥 Find Nearest Hospital",
+    locating: "Locating...",
+    contractionLabel: "⏱️ Contraction Timer",
+    startContraction: "Start Contraction",
+    endContraction: "End Contraction",
+    noContractions: "No contractions logged yet",
+    contractionNote: "Track duration and gap between contractions. Discuss any concerning patterns with your doctor right away.",
+    durationWord: "Duration", gapWord: "Gap",
+    addToHomeHint: "📲 Tip: tap your browser menu and choose 'Add to Home Screen' to use this like an app."
+  },
+  hi: {
+    disclaimerText: "⚠️ केवल शैक्षणिक वेलनेस गाइड। चिकित्सीय समस्याओं के लिए अपने स्त्री रोग विशेषज्ञ से सलाह लें।",
+    subtitle: "आपकी खुशहाल गर्भावस्था साथी 😊",
+    navHome: "होम", navDiet: "आहार", navVitals: "स्वास्थ्य", navClinic: "क्लिनिक", navChat: "एआई चैट",
+    weekLabel: "महीना 3 · सप्ताह 12",
+    weeksLeft: "40 में से 12 सप्ताह · 28 सप्ताह बाकी",
+    babyThisWeek: "इस सप्ताह आपका शिशु",
+    babySize: "आपका शिशु एक नींबू 🍋 के आकार का है",
+    milestoneText: "शिशु की हड्डियाँ सख्त होने लगी हैं, और छोटे नाखून बन रहे हैं!",
+    growthJourney: "विकास यात्रा",
+    scrollHint: "स्क्रॉल करें →",
+    dietTitle: "आहार ट्रैकर",
+    breakfastLabel: "🥣 नाश्ता", lunchLabel: "🍽️ दोपहर का भोजन", dinnerLabel: "🍲 रात का खाना",
+    breakfastPlaceholder: "जैसे ओट्स और बेरीज़",
+    lunchPlaceholder: "जैसे दाल, चावल और सब्ज़ी",
+    dinnerPlaceholder: "जैसे खिचड़ी और दही",
+    logBtn: "जोड़ें",
+    waterLabel: "💧 पानी की मात्रा", glassesUnit: "गिलास", addGlassBtn: "+ गिलास",
+    scannerTitle: "🔬 एआई फूड सेफ्टी स्कैनर",
+    scannerDesc: "यह जानने के लिए कोई खाद्य पदार्थ टाइप करें कि वह गर्भावस्था में सुरक्षित है या नहीं।",
+    scannerPlaceholder: "जैसे पपीता, सुशी, पनीर",
+    checkBtn: "जांचें",
+    safeResult: "✅ सुरक्षित: सामान्यतः सीमित मात्रा में सेवन सुरक्षित है। सुनिश्चित करें कि यह पूरी तरह से पका हो!",
+    warnResult: "❌ बचें: फूडबॉर्न जोखिम या गर्भाशय संकुचन की संभावना हो सकती है।",
+    vitalsTitle: "स्वास्थ्य और फिटनेस",
+    weightLabel: "⚖️ वज़न ट्रैकर", weightPlaceholder: "वज़न (किलो में)", noEntries: "अभी तक कोई एंट्री नहीं",
+    kickLabel: "👣 किक काउंटर", kicksColon: "किक्स:", startSession: "सत्र शुरू करें", saveSession: "सत्र सेव करें",
+    noSessions: "अभी तक कोई सत्र नहीं", kicksWord: "किक्स",
+    clinicTitle: "क्लिनिक असिस्टेंट", symptomCheckLabel: "📋 आज की लक्षण जांच",
+    sym_nausea: "मिचली", sym_fatigue: "थकान", sym_backache: "हल्का कमर दर्द", sym_ankles: "टखनों में सूजन",
+    sym_pain: "तेज़ पेट दर्द", sym_spotting: "स्पॉटिंग/रक्तस्राव", sym_vision: "धुंधला दिखना",
+    generateSummaryBtn: "स्त्री रोग विशेषज्ञ सारांश बनाएं",
+    summaryHeader: "📝 आपके स्त्री रोग विशेषज्ञ के लिए प्रश्न",
+    noSymptomsMsg: "आज कोई लक्षण नहीं चुना गया — बस एक नियमित जांच।",
+    generatedOnPrefix: "तैयार किया गया", weekWord: "सप्ताह",
+    emergencyTitle: "आपातकालीन चेतावनी",
+    emergencyMsg: "गंभीर लक्षण पाए गए हैं। कृपया तुरंत आपातकालीन सेवाओं से संपर्क करें या निकटतम अस्पताल जाएं!",
+    emergencyCall: "📞 आपातकालीन कॉल करें (112)", emergencyAmbulance: "🚑 एम्बुलेंस कॉल करें (102)", emergencyClose: "समझ गई, बंद करें",
+    chatTitle: "एआई साथी", chatPlaceholder: "बताएं आप कैसा महसूस कर रही हैं...", sendBtn: "भेजें",
+    chatGreeting: "नमस्ते, मैं यहाँ आपके लिए हूं 🌸 आज आप कैसा महसूस कर रही हैं बताइए, या गर्भावस्था के पोषण, नींद या व्यायाम के बारे में कुछ भी पूछिए।",
+    emptyMeal: "अभी तक कुछ नहीं जोड़ा गया",
+    aiThinking: "सोच रही हूं...",
+    shareWhatsapp: "📤 व्हाट्सएप पर शेयर करें",
+    findHospital: "🏥 निकटतम अस्पताल खोजें",
+    locating: "लोकेशन ढूंढ रहे हैं...",
+    contractionLabel: "⏱️ संकुचन टाइमर",
+    startContraction: "संकुचन शुरू करें",
+    endContraction: "संकुचन समाप्त करें",
+    noContractions: "अभी तक कोई संकुचन दर्ज नहीं",
+    contractionNote: "संकुचन की अवधि और उनके बीच के अंतराल को ट्रैक करें। किसी भी चिंताजनक पैटर्न के बारे में तुरंत अपने डॉक्टर से चर्चा करें।",
+    durationWord: "अवधि", gapWord: "अंतराल",
+    addToHomeHint: "📲 सुझाव: इसे ऐप की तरह उपयोग करने के लिए ब्राउज़र मेनू में 'होम स्क्रीन पर जोड़ें' चुनें।"
+  },
+  mr: {
+    disclaimerText: "⚠️ फक्त शैक्षणिक वेलनेस मार्गदर्शक. वैद्यकीय समस्यांसाठी कृपया तुमच्या स्त्रीरोगतज्ज्ञांचा सल्ला घ्या.",
+    subtitle: "तुमची आनंदी गर्भधारणा सोबती 😊",
+    navHome: "होम", navDiet: "आहार", navVitals: "आरोग्य", navClinic: "क्लिनिक", navChat: "एआय चॅट",
+    weekLabel: "महिना 3 · आठवडा 12",
+    weeksLeft: "40 पैकी 12 आठवडे · 28 आठवडे बाकी",
+    babyThisWeek: "या आठवड्यात तुमचे बाळ",
+    babySize: "तुमचे बाळ लिंबू 🍋 एवढ्या आकाराचे आहे",
+    milestoneText: "बाळाची हाडे कडक होऊ लागली आहेत आणि छोटी नखं तयार होत आहेत!",
+    growthJourney: "वाढीचा प्रवास",
+    scrollHint: "स्क्रोल करा →",
+    dietTitle: "आहार ट्रॅकर",
+    breakfastLabel: "🥣 नाश्ता", lunchLabel: "🍽️ दुपारचे जेवण", dinnerLabel: "🍲 रात्रीचे जेवण",
+    breakfastPlaceholder: "उदा. ओट्स आणि बेरीज",
+    lunchPlaceholder: "उदा. वरण, भात आणि भाजी",
+    dinnerPlaceholder: "उदा. खिचडी आणि दही",
+    logBtn: "नोंद करा",
+    waterLabel: "💧 पाण्याचे प्रमाण", glassesUnit: "ग्लास", addGlassBtn: "+ ग्लास",
+    scannerTitle: "🔬 एआय फूड सेफ्टी स्कॅनर",
+    scannerDesc: "गर्भधारणेत सुरक्षित आहे का हे तपासण्यासाठी एखादा पदार्थ टाइप करा.",
+    scannerPlaceholder: "उदा. पपई, सुशी, पनीर",
+    checkBtn: "तपासा",
+    safeResult: "✅ सुरक्षित: साधारणपणे मर्यादित प्रमाणात सेवन सुरक्षित आहे. ते पूर्णपणे शिजलेले असल्याची खात्री करा!",
+    warnResult: "❌ टाळा: अन्नजन्य धोका किंवा गर्भाशयाचे आकुंचन होण्याची शक्यता आहे.",
+    vitalsTitle: "आरोग्य आणि फिटनेस",
+    weightLabel: "⚖️ वजन ट्रॅकर", weightPlaceholder: "वजन (किलोमध्ये)", noEntries: "अद्याप कोणतीही नोंद नाही",
+    kickLabel: "👣 किक काउंटर", kicksColon: "किक्स:", startSession: "सत्र सुरू करा", saveSession: "सत्र सेव्ह करा",
+    noSessions: "अद्याप कोणतेही सत्र नाही", kicksWord: "किक्स",
+    clinicTitle: "क्लिनिक असिस्टंट", symptomCheckLabel: "📋 आजची लक्षण तपासणी",
+    sym_nausea: "मळमळ", sym_fatigue: "थकवा", sym_backache: "सौम्य पाठदुखी", sym_ankles: "घोट्यांना सूज",
+    sym_pain: "तीव्र पोटदुखी", sym_spotting: "स्पॉटिंग/रक्तस्राव", sym_vision: "अंधुक दिसणे",
+    generateSummaryBtn: "स्त्रीरोगतज्ज्ञ सारांश तयार करा",
+    summaryHeader: "📝 तुमच्या स्त्रीरोगतज्ज्ञांसाठी प्रश्न",
+    noSymptomsMsg: "आज कोणतेही लक्षण निवडलेले नाही — फक्त नियमित तपासणी.",
+    generatedOnPrefix: "तयार केले", weekWord: "आठवडा",
+    emergencyTitle: "आपत्कालीन इशारा",
+    emergencyMsg: "गंभीर लक्षणे आढळली आहेत. कृपया त्वरित आपत्कालीन सेवांशी संपर्क साधा किंवा जवळच्या रुग्णालयात जा!",
+    emergencyCall: "📞 आपत्कालीन कॉल करा (112)", emergencyAmbulance: "🚑 रुग्णवाहिका बोलवा (102)", emergencyClose: "समजले, बंद करा",
+    chatTitle: "एआय सोबती", chatPlaceholder: "तुम्हाला कसे वाटत आहे ते सांगा...", sendBtn: "पाठवा",
+    chatGreeting: "नमस्कार, मी इथे तुमच्यासाठी आहे 🌸 आज तुम्हाला कसे वाटते ते सांगा, किंवा गर्भधारणेतील आहार, झोप किंवा व्यायामाबद्दल काहीही विचारा.",
+    emptyMeal: "अद्याप काहीही नोंदवलेले नाही",
+    aiThinking: "विचार करत आहे...",
+    shareWhatsapp: "📤 व्हॉट्सअॅपवर शेअर करा",
+    findHospital: "🏥 जवळचे रुग्णालय शोधा",
+    locating: "लोकेशन शोधत आहे...",
+    contractionLabel: "⏱️ कळ टाइमर",
+    startContraction: "कळ सुरू करा",
+    endContraction: "कळ संपवा",
+    noContractions: "अद्याप कोणतीही कळ नोंदवलेली नाही",
+    contractionNote: "कळींचा कालावधी आणि त्यांमधील अंतर ट्रॅक करा. कोणताही चिंताजनक पॅटर्न आढळल्यास लगेच डॉक्टरांशी चर्चा करा.",
+    durationWord: "कालावधी", gapWord: "अंतर",
+    addToHomeHint: "📲 टीप: हे अ‍ॅपसारखे वापरण्यासाठी ब्राउझर मेनूमध्ये 'होम स्क्रीनवर जोडा' निवडा."
+  }
+};
+
+function t(key){
+  const dict = TRANSLATIONS[state.lang] || TRANSLATIONS.en;
+  if(dict[key] !== undefined) return dict[key];
+  return TRANSLATIONS.en[key] !== undefined ? TRANSLATIONS.en[key] : key;
+}
+
+function setLanguage(lang){
+  if(!TRANSLATIONS[lang]) return;
+  state.lang = lang;
+  applyTranslations();
+  const win = document.getElementById('chat-window');
+  win.innerHTML = '';
+  appendChat('ai', t('chatGreeting'));
+}
+
+function toggleTheme(){
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  document.getElementById('app-shell').dataset.theme = state.theme;
+  document.body.classList.toggle('dark-bg', state.theme === 'dark');
+  document.getElementById('theme-toggle-btn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+}
+
+function applyTranslations(){
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang === state.lang);
+  });
+  updateWaterDisplay();
+  renderMealList('breakfast');
+  renderMealList('lunch');
+  renderMealList('dinner');
+  renderWeightHistory();
+  renderKickHistory();
+  renderContractionHistory();
+  renderSymptomList();
+}
+
+/* ============ TAB NAVIGATION ============ */
+function switchTab(name){
+  document.querySelectorAll('.tab-view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.getElementById('view-container').scrollTo(0,0);
+}
+
+/* ============ HELPERS ============ */
+function escapeHTML(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ============ FRUIT ILLUSTRATIONS (hand-drawn, no external images) ============ */
+function fruitSVG(type){
+  const shapes = {
+    poppyseed:`<circle cx="50" cy="50" r="5" fill="#2B2118"/>`,
+    lentil:`<ellipse cx="50" cy="50" rx="15" ry="11" fill="#C99B6B"/><ellipse cx="50" cy="50" rx="15" ry="11" fill="none" stroke="#9C7349" stroke-width="2"/>`,
+    raspberry:`<circle cx="50" cy="38" r="9" fill="#E08FA0"/><circle cx="38" cy="48" r="9" fill="#E08FA0"/><circle cx="62" cy="48" r="9" fill="#E08FA0"/><circle cx="50" cy="56" r="9" fill="#E08FA0"/><circle cx="38" cy="64" r="9" fill="#E08FA0"/><circle cx="62" cy="64" r="9" fill="#E08FA0"/><path d="M50 26 q3 -8 12 -7" stroke="#7FA86B" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    lime:`<circle cx="50" cy="52" r="26" fill="#A9C97E"/><circle cx="50" cy="52" r="18" fill="#C7DE9E"/><path d="M50 26 q5 -7 12 -5" stroke="#6F8F4E" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    lemon:`<ellipse cx="50" cy="52" rx="28" ry="23" fill="#F7D774"/><ellipse cx="50" cy="52" rx="28" ry="23" fill="none" stroke="#E0B94F" stroke-width="2"/><ellipse cx="24" cy="52" rx="5" ry="3.5" fill="#E0B94F"/><ellipse cx="76" cy="52" rx="5" ry="3.5" fill="#E0B94F"/>`,
+    avocado:`<path d="M50 22c17 0 25 19 21 38-3 16-19 20-21 20s-18-4-21-20c-4-19 4-38 21-38Z" fill="#7C9D6B"/><circle cx="50" cy="58" r="14" fill="#C7A36B"/><circle cx="50" cy="58" r="9" fill="#A9824F"/>`,
+    banana:`<path d="M26 64c0-26 22-40 44-36-2 4-18 6-26 22-6 12-2 22 8 26-10 8-26 4-26-12Z" fill="#F2D86B"/>`,
+    corn:`<rect x="36" y="20" width="28" height="58" rx="14" fill="#F2D86B"/><line x1="36" y1="32" x2="64" y2="32" stroke="#E0BE4E" stroke-width="2"/><line x1="36" y1="42" x2="64" y2="42" stroke="#E0BE4E" stroke-width="2"/><line x1="36" y1="52" x2="64" y2="52" stroke="#E0BE4E" stroke-width="2"/><line x1="36" y1="62" x2="64" y2="62" stroke="#E0BE4E" stroke-width="2"/>`,
+    eggplant:`<path d="M50 30c16 0 24 16 20 30-4 14-15 20-20 20s-16-6-20-20c-4-14 4-30 20-30Z" fill="#7C5C8C"/><path d="M44 24q6-7 12 0" stroke="#7FA86B" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    squash:`<ellipse cx="50" cy="58" rx="23" ry="19" fill="#E3A857"/><ellipse cx="50" cy="33" rx="11" ry="13" fill="#E8BB72"/>`,
+    honeydew:`<circle cx="50" cy="52" r="28" fill="#D9DE9A"/><circle cx="50" cy="52" r="28" fill="none" stroke="#BFC67A" stroke-width="2"/>`,
+    watermelon:`<path d="M18 50a32 32 0 0 0 64 0Z" fill="#4F9659"/><path d="M23 50a27 27 0 0 0 54 0Z" fill="#F2F7E8"/><path d="M28 50a22 22 0 0 0 44 0Z" fill="#E8677A"/><circle cx="42" cy="44" r="2" fill="#2B2118"/><circle cx="58" cy="44" r="2" fill="#2B2118"/><circle cx="50" cy="48" r="2" fill="#2B2118"/>`
+  };
+  return `<svg viewBox="0 0 100 100" width="100%" height="100%">${shapes[type] || shapes.lemon}</svg>`;
+}
+
+const GROWTH_MILESTONES = [
+  {week:4,  fruit:'poppyseed'},
+  {week:6,  fruit:'lentil'},
+  {week:8,  fruit:'raspberry'},
+  {week:10, fruit:'lime'},
+  {week:12, fruit:'lemon'},
+  {week:16, fruit:'avocado'},
+  {week:20, fruit:'banana'},
+  {week:24, fruit:'corn'},
+  {week:28, fruit:'eggplant'},
+  {week:32, fruit:'squash'},
+  {week:36, fruit:'honeydew'},
+  {week:40, fruit:'watermelon'}
+];
+
+function renderDashboardFruits(){
+  document.getElementById('hero-fruit').innerHTML = fruitSVG('lemon');
+  const strip = document.getElementById('fruit-strip');
+  strip.innerHTML = GROWTH_MILESTONES.map(m => `
+    <div class="fruit-badge ${m.week===WEEK_NUMBER ? 'current' : ''}">
+      <div class="fruit-circle">${fruitSVG(m.fruit)}</div>
+      <span>${m.week}</span>
+    </div>
+  `).join('');
+}
+
+/* ============ DIET TRACKER ============ */
+function logMeal(meal){
+  const input = document.querySelector(`.meal-input[data-meal="${meal}"]`);
+  const val = input.value.trim();
+  if(!val) return;
+  state.meals[meal].push(val);
+  input.value = '';
+  renderMealList(meal);
+}
+function renderMealList(meal){
+  const list = document.getElementById('list-'+meal);
+  list.innerHTML = state.meals[meal].map((item,i) => `
+    <li class="meal-item"><span>${escapeHTML(item)}</span><button onclick="removeMeal('${meal}', ${i})" aria-label="Remove">✕</button></li>
+  `).join('') || `<li class="meal-empty">${t('emptyMeal')}</li>`;
+}
+function removeMeal(meal, idx){
+  state.meals[meal].splice(idx,1);
+  renderMealList(meal);
+}
+
+function updateWaterDisplay(){
+  document.getElementById('water-count').textContent = `${state.water} / 8 ${t('glassesUnit')}`;
+}
+function addWater(){
+  state.water++;
+  updateWaterDisplay();
+}
+
+const RISKY_KEYWORDS = [
+  'raw','sushi','papaya','unpasteurized',
+  'कच्चा','कच्चे','कच्ची',
+  'सुशी',
+  'पपीता','पपई',
+  'अनपाश्चुराइज्ड','अपाश्चुरीकृत'
+];
+const LANG_NAME = { en: 'English', hi: 'Hindi (Devanagari script)', mr: 'Marathi (Devanagari script)' };
+
+async function callClaudeAPI(systemPrompt, userMessage){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 600,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }]
+    })
+  });
+  if(!response.ok) throw new Error('API error ' + response.status);
+  const data = await response.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('No text in response');
+  return textBlock.text;
+}
+
+function getFoodSafetyMock(food){
+  const lower = food.toLowerCase();
+  const isRisky = RISKY_KEYWORDS.some(k => lower.includes(k.toLowerCase()));
+  return isRisky
+    ? { safe:false, message: t('warnResult').replace(/^[^\s]+\s/,'') }
+    : { safe:true, message: t('safeResult').replace(/^[^\s]+\s/,'') };
+}
+
+async function getFoodSafetySmart(food){
+  const systemPrompt = `You are a pregnancy food-safety checker inside a wellness app called MamaCare AI. Given a food or ingredient name, respond ONLY with raw JSON and nothing else (no markdown, no code fences), in this exact shape: {"safe": true or false, "message": "one short sentence in ${LANG_NAME[state.lang] || 'English'} explaining why, ending with a brief practical tip"}. Use general, widely-known pregnancy nutrition guidance (e.g. avoid raw or undercooked meat/eggs, high-mercury fish, unpasteurized dairy, excess caffeine, raw sprouts; most fully-cooked home foods are fine in moderation). Do not diagnose or give exact dosages. If uncertain or the input isn't a real food, default to "safe": false with a gentle suggestion to ask her doctor.`;
+  try {
+    const raw = await callClaudeAPI(systemPrompt, food);
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    if(typeof parsed.safe === 'boolean' && typeof parsed.message === 'string' && parsed.message.length > 0){
+      return parsed;
+    }
+    throw new Error('Unexpected response shape');
+  } catch(err){
+    return getFoodSafetyMock(food);
+  }
+}
+
+async function checkFoodSafety(){
+  const input = document.getElementById('food-input');
+  const val = input.value.trim();
+  if(!val) return;
+  const resultBox = document.getElementById('food-result');
+  resultBox.innerHTML = `<div class="result-box" style="background:var(--lavender-soft);color:var(--lavender-deep);">${t('aiThinking')}</div>`;
+  const verdict = await getFoodSafetySmart(val);
+  resultBox.innerHTML = verdict.safe
+    ? `<div class="result-box safe">✅ ${escapeHTML(verdict.message)}</div>`
+    : `<div class="result-box warn">❌ ${escapeHTML(verdict.message)}</div>`;
+}
+
+/* ============ VITALS & FITNESS ============ */
+function logWeight(){
+  const input = document.getElementById('weight-input');
+  const val = parseFloat(input.value);
+  if(!val || val<=0) return;
+  state.weightHistory.unshift({weight:val, ts:Date.now()});
+  input.value = '';
+  renderWeightHistory();
+}
+function renderWeightHistory(){
+  const list = document.getElementById('weight-history');
+  const locale = LOCALE_MAP[state.lang] || 'en-IN';
+  list.innerHTML = state.weightHistory.map(w => `
+    <li class="meal-item"><span>${new Date(w.ts).toLocaleDateString(locale,{day:'numeric',month:'short'})}</span><span style="font-weight:700;color:var(--coral-deep);">${w.weight} kg</span></li>
+  `).join('') || `<li class="meal-empty">${t('noEntries')}</li>`;
+}
+
+function startKickSession(){
+  state.kick.active = true;
+  state.kick.count = 0;
+  state.kick.seconds = 0;
+  document.getElementById('kick-count').textContent = '0';
+  document.getElementById('kick-timer').textContent = '00:00';
+  document.getElementById('kick-tap-btn').classList.remove('hidden');
+  document.getElementById('kick-controls-start').classList.add('hidden');
+  document.getElementById('kick-controls-save').classList.remove('hidden');
+  state.kick.timerId = setInterval(()=>{
+    state.kick.seconds++;
+    const m = String(Math.floor(state.kick.seconds/60)).padStart(2,'0');
+    const s = String(state.kick.seconds%60).padStart(2,'0');
+    document.getElementById('kick-timer').textContent = `${m}:${s}`;
+  }, 1000);
+}
+function addKick(){
+  if(!state.kick.active) return;
+  state.kick.count++;
+  document.getElementById('kick-count').textContent = state.kick.count;
+}
+function saveKickSession(){
+  clearInterval(state.kick.timerId);
+  state.kick.active = false;
+  const m = Math.floor(state.kick.seconds/60), s = state.kick.seconds%60;
+  state.kick.sessions.unshift({
+    count: state.kick.count,
+    duration: `${m}m ${s}s`,
+    ts: Date.now()
+  });
+  document.getElementById('kick-tap-btn').classList.add('hidden');
+  document.getElementById('kick-controls-start').classList.remove('hidden');
+  document.getElementById('kick-controls-save').classList.add('hidden');
+  renderKickHistory();
+}
+function renderKickHistory(){
+  const list = document.getElementById('kick-history');
+  const locale = LOCALE_MAP[state.lang] || 'en-IN';
+  list.innerHTML = state.kick.sessions.map(s => `
+    <li class="meal-item"><span>${new Date(s.ts).toLocaleDateString(locale,{day:'numeric',month:'short'})}</span><span style="font-weight:700;color:var(--coral-deep);">${s.count} ${t('kicksWord')} · ${s.duration}</span></li>
+  `).join('') || `<li class="meal-empty">${t('noSessions')}</li>`;
+}
+
+/* ============ CONTRACTION TIMER ============ */
+function startContraction(){
+  state.contraction.active = true;
+  state.contraction.seconds = 0;
+  state.contraction.startTs = Date.now();
+  document.getElementById('contraction-timer').textContent = '00:00';
+  document.getElementById('contraction-controls-start').classList.add('hidden');
+  document.getElementById('contraction-controls-end').classList.remove('hidden');
+  state.contraction.timerId = setInterval(()=>{
+    state.contraction.seconds++;
+    const m = String(Math.floor(state.contraction.seconds/60)).padStart(2,'0');
+    const s = String(state.contraction.seconds%60).padStart(2,'0');
+    document.getElementById('contraction-timer').textContent = `${m}:${s}`;
+  }, 1000);
+}
+function endContraction(){
+  clearInterval(state.contraction.timerId);
+  state.contraction.active = false;
+  const m = Math.floor(state.contraction.seconds/60), s = state.contraction.seconds%60;
+  const prev = state.contraction.sessions[0];
+  let gapText = '—';
+  if(prev){
+    const gapMin = Math.round((state.contraction.startTs - prev.startTs)/60000);
+    gapText = `${gapMin} min`;
+  }
+  state.contraction.sessions.unshift({
+    duration: `${m}m ${s}s`,
+    gap: gapText,
+    startTs: state.contraction.startTs
+  });
+  document.getElementById('contraction-controls-end').classList.add('hidden');
+  document.getElementById('contraction-controls-start').classList.remove('hidden');
+  renderContractionHistory();
+}
+function renderContractionHistory(){
+  const list = document.getElementById('contraction-history');
+  const locale = LOCALE_MAP[state.lang] || 'en-IN';
+  list.innerHTML = state.contraction.sessions.map(c => `
+    <li class="meal-item"><span>${new Date(c.startTs).toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'})}</span><span style="font-weight:700;color:var(--lavender-deep);">${t('durationWord')} ${c.duration} · ${t('gapWord')} ${c.gap}</span></li>
+  `).join('') || `<li class="meal-empty">${t('noContractions')}</li>`;
+}
+
+/* ============ CLINIC ASSISTANT ============ */
+const SYMPTOMS = [
+  {key:'nausea',   redFlag:false},
+  {key:'fatigue',  redFlag:false},
+  {key:'backache', redFlag:false},
+  {key:'ankles',   redFlag:false},
+  {key:'pain',     redFlag:true},
+  {key:'spotting', redFlag:true},
+  {key:'vision',   redFlag:true}
+];
+
+function renderSymptomList(){
+  const wrap = document.getElementById('symptom-list');
+  wrap.innerHTML = SYMPTOMS.map(s => `
+    <label class="symptom-row ${s.redFlag ? 'redflag' : ''}">
+      <input type="checkbox" data-key="${s.key}" ${state.symptomsChecked.has(s.key) ? 'checked' : ''} onchange="onSymptomChange(this)">
+      <span>${s.redFlag ? '🚩 ' : ''}${t('sym_'+s.key)}</span>
+    </label>
+  `).join('');
+}
+
+function onSymptomChange(checkbox){
+  const key = checkbox.dataset.key;
+  if(checkbox.checked){
+    state.symptomsChecked.add(key);
+    const def = SYMPTOMS.find(s => s.key === key);
+    if(def && def.redFlag) showEmergencyOverlay();
+  } else {
+    state.symptomsChecked.delete(key);
+  }
+}
+
+const QUESTION_TEMPLATES = {
+  en: {
+    nausea: w => `I have been experiencing nausea. Is this normal at ${w} weeks?`,
+    fatigue: w => `I've been feeling unusually fatigued lately. Should I be concerned at ${w} weeks?`,
+    backache: w => `I have mild backache. What's a safe way to relieve it?`,
+    ankles: w => `My ankles have been swelling. Is this within the normal range at ${w} weeks?`,
+    pain: w => `I experienced severe abdominal pain. What could be causing this?`,
+    spotting: w => `I have been experiencing spotting/bleeding. Is this normal at ${w} weeks?`,
+    vision: w => `I've had blurred vision. Could this indicate something serious?`
+  },
+  hi: {
+    nausea: w => `मुझे मिचली महसूस हो रही है। क्या यह ${w} सप्ताह में सामान्य है?`,
+    fatigue: w => `मुझे असामान्य रूप से थकान महसूस हो रही है। क्या ${w} सप्ताह में यह चिंता की बात है?`,
+    backache: w => `मुझे हल्का कमर दर्द है। इसे सुरक्षित तरीके से कम करने के लिए मैं क्या कर सकती हूं?`,
+    ankles: w => `मेरे टखनों में सूजन है। क्या यह ${w} सप्ताह में सामान्य सीमा के भीतर है?`,
+    pain: w => `मुझे तेज़ पेट दर्द हुआ है। इसका कारण क्या हो सकता है?`,
+    spotting: w => `मुझे स्पॉटिंग/रक्तस्राव हुआ है। क्या यह ${w} सप्ताह में सामान्य है?`,
+    vision: w => `मुझे धुंधला दिखाई दिया है। क्या यह किसी गंभीर समस्या का संकेत हो सकता है?`
+  },
+  mr: {
+    nausea: w => `मला मळमळ जाणवत आहे. ${w} आठवड्यांत हे सामान्य आहे का?`,
+    fatigue: w => `मला विनाकारण थकवा जाणवत आहे. ${w} आठवड्यांत याची काळजी करावी का?`,
+    backache: w => `मला सौम्य पाठदुखी आहे. ती सुरक्षितपणे कमी करण्यासाठी मी काय करू शकते?`,
+    ankles: w => `माझ्या घोट्यांना सूज आली आहे. ${w} आठवड्यांत हे सामान्य मर्यादेत आहे का?`,
+    pain: w => `मला तीव्र पोटदुखी जाणवली. याचे कारण काय असू शकते?`,
+    spotting: w => `मला स्पॉटिंग/रक्तस्राव जाणवला. ${w} आठवड्यांत हे सामान्य आहे का?`,
+    vision: w => `मला अंधुक दिसले. हे एखाद्या गंभीर समस्येचे लक्षण असू शकते का?`
+  }
+};
+
+const WEIGHT_Q = {
+  en: (w,d) => `My latest logged weight is ${w} kg (${d}). Is this on track?`,
+  hi: (w,d) => `मेरा नवीनतम दर्ज वज़न ${w} किलो (${d}) है। क्या यह सही दिशा में है?`,
+  mr: (w,d) => `माझे नवीनतम नोंदवलेले वजन ${w} किलो (${d}) आहे. हे योग्य दिशेने आहे का?`
+};
+const KICKS_Q = {
+  en: (c,d) => `I counted ${c} kicks in ${d} during my last session. Does this seem within a healthy range?`,
+  hi: (c,d) => `मेरे पिछले सत्र में मैंने ${d} में ${c} किक्स गिनीं। क्या यह स्वस्थ सीमा में लगता है?`,
+  mr: (c,d) => `माझ्या शेवटच्या सत्रात मी ${d} मध्ये ${c} किक्स मोजल्या. हे आरोग्यदायी मर्यादेत वाटते का?`
+};
+
+function generateSummary(){
+  const out = document.getElementById('summary-output');
+  const qt = QUESTION_TEMPLATES[state.lang] || QUESTION_TEMPLATES.en;
+  const symptomKeys = Array.from(state.symptomsChecked);
+  const locale = LOCALE_MAP[state.lang] || 'en-IN';
+  let lines = symptomKeys.map(k => (qt[k] || QUESTION_TEMPLATES.en[k])(WEEK_NUMBER));
+  if(!lines.length) lines = [t('noSymptomsMsg')];
+  const latestWeight = state.weightHistory[0];
+  const latestKicks = state.kick.sessions[0];
+  if(latestWeight){
+    const wq = WEIGHT_Q[state.lang] || WEIGHT_Q.en;
+    const dStr = new Date(latestWeight.ts).toLocaleDateString(locale,{day:'numeric',month:'short'});
+    lines.push(wq(latestWeight.weight, dStr));
+  }
+  if(latestKicks){
+    const kq = KICKS_Q[state.lang] || KICKS_Q.en;
+    lines.push(kq(latestKicks.count, latestKicks.duration));
+  }
+  const dateStr = new Date().toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'});
+  out.classList.remove('hidden');
+  out.innerHTML = `
+    <p class="meal-label" style="margin:0 0 8px;">${t('summaryHeader')}</p>
+    <ul style="padding-left:18px;margin:0;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.5;">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>
+    <p style="font-size:11px;color:var(--charcoal-soft);margin:12px 0 14px;">${t('generatedOnPrefix')} ${dateStr} · ${t('weekWord')} ${WEEK_NUMBER}</p>
+    <button class="btn-secondary" style="width:100%;background:var(--safe-bg);color:var(--safe-text);" onclick="shareSummaryWhatsApp()">${t('shareWhatsapp')}</button>
+  `;
+  state.lastSummaryText = `${t('summaryHeader')}\n\n${lines.map(l=>'• '+l).join('\n')}\n\n${t('generatedOnPrefix')} ${dateStr} · ${t('weekWord')} ${WEEK_NUMBER}`;
+}
+
+function shareSummaryWhatsApp(){
+  if(!state.lastSummaryText) return;
+  window.open(`https://wa.me/?text=${encodeURIComponent(state.lastSummaryText)}`, '_blank');
+}
+
+function findNearestHospital(){
+  const openFallback = () => window.open('https://www.google.com/maps/search/hospitals+near+me', '_blank');
+  if(!navigator.geolocation){ openFallback(); return; }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      window.open(`https://www.google.com/maps/search/hospitals/@${latitude},${longitude},14z`, '_blank');
+    },
+    openFallback,
+    { timeout: 8000 }
+  );
+}
+
+function showEmergencyOverlay(){
+  document.getElementById('emergency-overlay').classList.remove('hidden');
+}
+function closeEmergencyOverlay(){
+  document.getElementById('emergency-overlay').classList.add('hidden');
+}
+
+/* ============ AI COMPANION CHAT (mock, instant, offline, multilingual) ============ */
+const AI_RESPONSES = {
+  en: {
+    nausea: [
+      "Morning sickness around this stage is incredibly common — try small, frequent meals and ginger tea, which many mums-to-be find soothing. If it ever becomes severe or you can't keep fluids down, please check in with your doctor. 💛",
+      "I hear you, nausea can be exhausting. Crackers before you even get out of bed and staying hydrated in small sips can help a lot. Still, do mention it at your next appointment so your doctor can keep an eye on it."
+    ],
+    sleep: [
+      "Pregnancy sleep can be tricky! Try sleeping on your left side with a pillow between your knees — it really helps with comfort and circulation. If sleeplessness is really wearing you down, your doctor can suggest safe options.",
+      "Rest matters so much right now. A short wind-down routine and cutting screens an hour before bed can help your body settle. If it persists, it's worth flagging to your gynecologist."
+    ],
+    exercise: [
+      "Gentle movement like prenatal yoga or a 20-minute walk is usually wonderful at this stage and can really lift your mood. Just check with your doctor before starting anything new, especially given your specific history.",
+      "Staying active in moderation is great for you and baby. Listen to your body, stay hydrated, and avoid lying flat on your back for long periods. Always good to confirm what's right for you with your doctor."
+    ],
+    diet: [
+      "Focus on colourful, whole foods — leafy greens, dals, fruits, and good protein sources go a long way right now. Cravings are normal too, just balance them out. Your doctor or a nutritionist can tailor this further to you.",
+      "Eating for two doesn't mean doubling portions, just nourishing more intentionally. Folate, iron, and calcium-rich foods are especially helpful this trimester. Do run your diet plan by your doctor at your next visit."
+    ],
+    anxiety: [
+      "It's so normal to feel anxious sometimes — your body and life are changing a lot. Try deep breathing, journaling, or talking to someone you trust. If the worry feels heavy or constant, please share this with your doctor too.",
+      "Sending you a gentle hug 💛 Pregnancy can bring up a lot of emotions. Be kind to yourself today. If anxiety is affecting your daily life, your doctor can connect you with great support."
+    ],
+    kicks: [
+      "Feeling those little movements is so special! At 12 weeks it's still early for noticeable kicks for most people, but it won't be long now. If you ever have concerns about movement patterns later on, always check with your doctor.",
+      "Every pregnancy is different in when kicks become noticeable. Keep logging what you feel in the Vitals tab, and bring any concerns to your doctor at your check-up."
+    ],
+    greeting: [
+      "Hello, mama! 🌸 I'm so glad you're here. How are you feeling today?",
+      "Hi there! It's lovely to hear from you. What's on your mind today?"
+    ],
+    default: [
+      "Thank you for sharing that with me. Every pregnancy journey is unique, and what you're feeling matters. For anything specific to your health, your doctor is always the best person to confirm with. 💛",
+      "I appreciate you telling me this. Be gentle with yourself today. If this is something that's been on your mind a lot, it's worth mentioning at your next doctor's visit."
+    ]
+  },
+  hi: {
+    nausea: [
+      "इस समय सुबह की मिचली बहुत आम है — थोड़ा-थोड़ा करके बार-बार खाएं और अदरक की चाय लें, इससे कई गर्भवती महिलाओं को आराम मिलता है। अगर यह गंभीर हो जाए या आप तरल पदार्थ नहीं रख पा रही हों, तो कृपया डॉक्टर से संपर्क करें। 💛",
+      "मैं समझती हूं, मिचली थका देने वाली हो सकती है। बिस्तर से उठने से पहले कुछ बिस्किट खाना और थोड़ा-थोड़ा पानी पीते रहना मदद कर सकता है। फिर भी अपनी अगली विज़िट में डॉक्टर को इसके बारे में ज़रूर बताएं।"
+    ],
+    sleep: [
+      "गर्भावस्था में नींद मुश्किल हो सकती है! बाईं करवट सोने और घुटनों के बीच तकिया रखने की कोशिश करें — इससे आराम और रक्त संचार दोनों में मदद मिलती है। अगर नींद न आना ज़्यादा परेशान कर रहा हो, तो डॉक्टर सुरक्षित उपाय सुझा सकते हैं।",
+      "अभी आराम बहुत मायने रखता है। सोने से एक घंटे पहले स्क्रीन से दूर रहने की एक छोटी रूटीन मदद कर सकती है। अगर यह बना रहे, तो अपने स्त्री रोग विशेषज्ञ को बताना अच्छा रहेगा।"
+    ],
+    exercise: [
+      "इस समय हल्की गतिविधि जैसे प्रीनेटल योगा या 20 मिनट की वॉक बहुत अच्छी हो सकती है और मूड भी बेहतर करती है। बस कुछ भी नया शुरू करने से पहले डॉक्टर से ज़रूर पूछें, खासकर अपनी स्थिति के अनुसार।",
+      "थोड़ी मात्रा में सक्रिय रहना आपके और शिशु दोनों के लिए अच्छा है। अपने शरीर की सुनें, हाइड्रेटेड रहें, और लंबे समय तक पीठ के बल लेटने से बचें। हमेशा डॉक्टर से पुष्टि कर लें कि आपके लिए क्या सही है।"
+    ],
+    diet: [
+      "रंग-बिरंगे, संपूर्ण आहार पर ध्यान दें — हरी सब्ज़ियां, दालें, फल और अच्छे प्रोटीन स्रोत बहुत मदद करते हैं। क्रेविंग्स होना सामान्य है, बस संतुलन बनाए रखें। अपनी अगली विज़िट में डॉक्टर या न्यूट्रिशनिस्ट से अपना आहार ज़रूर साझा करें।",
+      "दो लोगों के लिए खाने का मतलब डबल मात्रा नहीं, बल्कि समझदारी से पोषण लेना है। इस तिमाही में फोलेट, आयरन और कैल्शियम से भरपूर आहार खासतौर पर मददगार हैं। अपनी अगली विज़िट में डॉक्टर से अपनी डाइट प्लान ज़रूर चेक करवाएं।"
+    ],
+    anxiety: [
+      "कभी-कभी चिंता महसूस होना बिल्कुल सामान्य है — आपका शरीर और जीवन दोनों बदल रहे हैं। गहरी सांस लेना, जर्नलिंग करना, या किसी भरोसेमंद व्यक्ति से बात करना मदद कर सकता है। अगर यह चिंता भारी या लगातार बनी रहे, तो कृपया डॉक्टर से भी ज़रूर साझा करें।",
+      "एक गर्म गले लगना भेज रही हूं 💛 गर्भावस्था में कई तरह की भावनाएं आना सामान्य है। आज खुद के प्रति दयालु रहें। अगर चिंता आपकी रोज़मर्रा की ज़िंदगी पर असर डाल रही हो, तो डॉक्टर अच्छी सहायता दिला सकते हैं।"
+    ],
+    kicks: [
+      "वो छोटी-छोटी हलचलें महसूस करना बहुत खास होता है! 12 सप्ताह में ज़्यादातर महिलाओं के लिए स्पष्ट किक्स महसूस होना अभी जल्दी है, लेकिन ज़्यादा समय नहीं लगेगा। बाद में अगर हलचल के पैटर्न को लेकर कोई चिंता हो, तो हमेशा डॉक्टर से ज़रूर पूछें।",
+      "हर गर्भावस्था में किक्स महसूस होने का समय अलग होता है। वाइटल्स टैब में जो महसूस करें उसे लॉग करती रहें, और किसी भी चिंता को अपनी अगली विज़िट में डॉक्टर के सामने रखें।"
+    ],
+    greeting: [
+      "नमस्ते, मां! 🌸 आपको देखकर बहुत अच्छा लगा। आज आप कैसा महसूस कर रही हैं?",
+      "नमस्ते! आपसे सुनकर अच्छा लगा। आज आपके मन में क्या चल रहा है?"
+    ],
+    default: [
+      "यह बताने के लिए धन्यवाद। हर गर्भावस्था की यात्रा अलग होती है, और आप जो महसूस कर रही हैं वो मायने रखता है। स्वास्थ्य से जुड़ी किसी भी खास बात के लिए डॉक्टर से पुष्टि करना सबसे अच्छा है। 💛",
+      "मुझे यह बताने के लिए धन्यवाद। आज खुद के प्रति नरम रहें। अगर यह बात आपके मन में बार-बार आ रही है, तो अगली डॉक्टर विज़िट में इसका ज़िक्र ज़रूर करें।"
+    ]
+  },
+  mr: {
+    nausea: [
+      "या टप्प्यात सकाळची मळमळ खूप सामान्य आहे — थोड्या थोड्या वेळाने कमी प्रमाणात खा आणि आल्याचा चहा घ्या, याने अनेक गर्भवती महिलांना आराम मिळतो. जर ती तीव्र झाली किंवा तुम्हाला द्रव पदार्थ टिकवता येत नसतील, तर कृपया डॉक्टरांशी संपर्क साधा. 💛",
+      "मला समजतंय, मळमळ खूप थकवणारी असू शकते. अंथरुणातून उठण्याआधी थोडे बिस्किट खाणे आणि थोडे थोडे पाणी पीत राहणे मदत करू शकते. तरीही पुढच्या भेटीत डॉक्टरांना याबद्दल नक्की सांगा."
+    ],
+    sleep: [
+      "गर्भधारणेत झोप कठीण होऊ शकते! डाव्या कुशीवर झोपण्याचा आणि गुडघ्यांमध्ये उशी ठेवण्याचा प्रयत्न करा — याने आराम आणि रक्ताभिसरण दोन्हीस मदत होते. झोप न लागणे जास्त त्रासदायक होत असल्यास डॉक्टर सुरक्षित उपाय सुचवू शकतात.",
+      "सध्या विश्रांती खूप महत्त्वाची आहे. झोपण्याआधी एक तास स्क्रीनपासून दूर राहण्याची सवय मदत करू शकते. हे टिकून राहिल्यास, स्त्रीरोगतज्ज्ञांना नक्की सांगा."
+    ],
+    exercise: [
+      "या टप्प्यावर प्रीनेटल योगा किंवा 20 मिनिटांची चालणे यासारखी सौम्य हालचाल खूप छान असते आणि मूडही सुधारते. फक्त काहीही नवीन सुरू करण्यापूर्वी डॉक्टरांना नक्की विचारा, विशेषतः तुमच्या स्थितीनुसार.",
+      "थोड्या प्रमाणात सक्रिय राहणे तुमच्यासाठी आणि बाळासाठी चांगले आहे. तुमच्या शरीराचे ऐका, हायड्रेटेड रहा, आणि दीर्घकाळ पाठीवर झोपणे टाळा. तुमच्यासाठी काय योग्य आहे हे नेहमी डॉक्टरांकडून खात्री करून घ्या."
+    ],
+    diet: [
+      "रंगीबेरंगी, संपूर्ण अन्नपदार्थांवर लक्ष द्या — पालेभाज्या, डाळी, फळे आणि चांगले प्रथिनयुक्त पदार्थ खूप मदत करतात. क्रेविंग्स होणे सामान्य आहे, फक्त समतोल राखा. पुढच्या भेटीत डॉक्टर किंवा आहारतज्ज्ञांकडून तुमचा आहार नक्की तपासून घ्या.",
+      "दोघांसाठी खाणे म्हणजे दुप्पट प्रमाण नाही, तर अधिक जाणीवपूर्वक पोषण घेणे आहे. या तिमाहीत फोलेट, लोह आणि कॅल्शियमयुक्त आहार विशेष उपयुक्त आहे. पुढच्या भेटीत तुमची आहार योजना डॉक्टरांकडून नक्की तपासून घ्या."
+    ],
+    anxiety: [
+      "कधीकधी काळजी वाटणे अगदी सामान्य आहे — तुमचे शरीर आणि आयुष्य दोन्ही बदलत आहे. दीर्घ श्वास घेणे, जर्नलिंग करणे, किंवा विश्वासू व्यक्तीशी बोलणे मदत करू शकते. ही काळजी जड किंवा सतत वाटत असल्यास, कृपया डॉक्टरांनाही नक्की सांगा.",
+      "तुम्हाला एक उबदार मिठी पाठवत आहे 💛 गर्भधारणेत अनेक भावना येणे सामान्य आहे. आज स्वतःशी प्रेमळ रहा. काळजी तुमच्या रोजच्या आयुष्यावर परिणाम करत असल्यास, डॉक्टर चांगली मदत मिळवून देऊ शकतात."
+    ],
+    kicks: [
+      "त्या छोट्या हालचाली जाणवणे खूप खास असते! 12 आठवड्यांत बहुतेक महिलांना स्पष्ट किक्स जाणवणे अजून लवकर आहे, पण फार वेळ लागणार नाही. नंतर हालचालींच्या पॅटर्नबद्दल काही काळजी वाटल्यास नेहमी डॉक्टरांना विचारा.",
+      "प्रत्येक गर्भधारणेत किक्स जाणवण्याची वेळ वेगळी असते. व्हायटल्स टॅबमध्ये जे जाणवते ते नोंदवत रहा, आणि कोणतीही काळजी पुढच्या भेटीत डॉक्टरांसमोर मांडा."
+    ],
+    greeting: [
+      "नमस्कार, आई! 🌸 तुम्हाला पाहून खूप आनंद झाला. आज तुम्हाला कसे वाटत आहे?",
+      "नमस्कार! तुमच्याकडून ऐकून छान वाटलं. आज तुमच्या मनात काय चालू आहे?"
+    ],
+    default: [
+      "हे सांगितल्याबद्दल धन्यवाद. प्रत्येक गर्भधारणेचा प्रवास वेगळा असतो, आणि तुम्हाला जे वाटतंय ते महत्त्वाचे आहे. आरोग्याशी संबंधित कोणत्याही गोष्टीसाठी डॉक्टरांकडून खात्री करून घेणे सर्वोत्तम आहे. 💛",
+      "मला हे सांगितल्याबद्दल धन्यवाद. आज स्वतःशी सौम्य रहा. हा विचार वारंवार मनात येत असल्यास, पुढच्या डॉक्टर भेटीत त्याचा उल्लेख नक्की करा."
+    ]
+  }
+};
+
+function getAIResponseMock(text){
+  const lowerText = text.toLowerCase();
+  let category = 'default';
+  if(/hi|hello|hey|namaste|नमस्ते|नमस्कार/.test(lowerText)) category = 'greeting';
+  if(/nause|sick|vomit|throw|मतली|मिचली|उलटी|मळमळ/.test(lowerText)) category = 'nausea';
+  else if(/sleep|tired|insomnia|rest|exhaust|नींद|थकान|झोप|थकवा/.test(lowerText)) category = 'sleep';
+  else if(/exercise|workout|walk|yoga|active|व्यायाम|योग/.test(lowerText)) category = 'exercise';
+  else if(/eat|food|diet|hungry|craving|nutrition|खाना|आहार|भूख|जेवण|भूक/.test(lowerText)) category = 'diet';
+  else if(/stress|anxious|worry|scared|afraid|overwhelm|चिंता|तनाव|डर|काळजी|ताण|भीती/.test(lowerText)) category = 'anxiety';
+  else if(/kick|movement|flutter|हलचल|लात|हालचाल|लाथ/.test(lowerText)) category = 'kicks';
+  const langResponses = AI_RESPONSES[state.lang] || AI_RESPONSES.en;
+  const arr = langResponses[category] || langResponses.default;
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+async function getAIResponseSmart(text){
+  const systemPrompt = `You are a warm, empathetic AI companion inside a pregnancy wellness app called MamaCare AI, talking with a mother who is at week ${WEEK_NUMBER} of pregnancy. Respond ONLY in ${LANG_NAME[state.lang] || 'English'}, in 2-4 short, caring sentences. Be supportive and practical about pregnancy wellness, nutrition, sleep, exercise, or emotions. Always end with a brief, natural reminder to confirm anything important with her doctor. Never give specific medical diagnoses, dosages, or medication advice. Keep the tone warm and concise, no markdown formatting, no headers.`;
+  try {
+    const reply = await callClaudeAPI(systemPrompt, text);
+    return reply.trim();
+  } catch(err){
+    return getAIResponseMock(text);
+  }
+}
+
+async function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  appendChat('user', text);
+  input.value = '';
+  showTyping();
+  const [reply] = await Promise.all([
+    getAIResponseSmart(text),
+    new Promise(resolve => setTimeout(resolve, 500))
+  ]);
+  removeTyping();
+  appendChat('ai', reply);
+}
+function appendChat(role, text){
+  const win = document.getElementById('chat-window');
+  const row = document.createElement('div');
+  row.className = `chat-row ${role}`;
+  row.innerHTML = `<div class="bubble">${escapeHTML(text)}</div>`;
+  win.appendChild(row);
+  win.scrollTop = win.scrollHeight;
+}
+function showTyping(){
+  const win = document.getElementById('chat-window');
+  const row = document.createElement('div');
+  row.className = 'chat-row ai';
+  row.id = 'typing-row';
+  row.innerHTML = `<div class="bubble"><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
+  win.appendChild(row);
+  win.scrollTop = win.scrollHeight;
+}
+function removeTyping(){
+  const row = document.getElementById('typing-row');
+  if(row) row.remove();
+}
+
+/* ============ VOICE INPUT (free, built into the browser) ============ */
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+let activeRecognition = null;
+
+function startMic(buttonId, inputId){
+  if(!SpeechRecognitionAPI) return;
+  const btn = document.getElementById(buttonId);
+  if(activeRecognition){ activeRecognition.stop(); return; }
+  const recognition = new SpeechRecognitionAPI();
+  recognition.lang = LOCALE_MAP[state.lang] || 'en-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  activeRecognition = recognition;
+  btn.classList.add('listening');
+  recognition.onresult = (event) => {
+    document.getElementById(inputId).value = event.results[0][0].transcript;
+  };
+  recognition.onerror = () => {};
+  recognition.onend = () => {
+    btn.classList.remove('listening');
+    activeRecognition = null;
+  };
+  try {
+    recognition.start();
+  } catch(e){
+    btn.classList.remove('listening');
+    activeRecognition = null;
+  }
+}
+window.startMic = startMic;
+
+function hideMicButtonsIfUnsupported(){
+  if(!SpeechRecognitionAPI){
+    document.querySelectorAll('.mic-btn').forEach(b => b.style.display = 'none');
+  }
+}
+
+/* ============ INIT ============ */
+window.addEventListener('DOMContentLoaded', () => {
+  renderDashboardFruits();
+  applyTranslations();
+  appendChat('ai', t('chatGreeting'));
+  hideMicButtonsIfUnsupported();
+});
+</script>
+</body>
+</html>
