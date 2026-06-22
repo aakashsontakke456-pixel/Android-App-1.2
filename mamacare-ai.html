@@ -234,6 +234,33 @@
   @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,69,63,0.35);}50%{box-shadow:0 0 0 14px rgba(224,69,63,0);}}
   .hidden{display:none !important;}
   ::-webkit-scrollbar{width:0;height:0;}
+  .scan-zone{border:2px dashed var(--input-border);border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer;transition:.2s;background:var(--surface-soft);position:relative;}
+  .scan-zone:active{border-color:var(--coral-deep);background:var(--coral-soft);}
+  .scan-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .scan-zone .scan-icon{font-size:30px;margin-bottom:6px;}
+  .scan-zone h4{font-size:13.5px;font-weight:700;color:var(--charcoal);margin:0;}
+  .scan-zone p{font-size:11.5px;color:var(--charcoal-soft);margin:4px 0 0;}
+  .scan-preview{width:100%;border-radius:14px;margin-top:10px;max-height:220px;object-fit:cover;display:block;}
+  .scan-loading{display:flex;align-items:center;gap:10px;padding:14px;background:var(--lavender-soft);border-radius:14px;margin-top:10px;font-size:13px;color:var(--lavender-deep);font-weight:600;}
+  .scan-dots{display:inline-flex;gap:3px;}
+  .scan-dots span{width:6px;height:6px;border-radius:50%;background:var(--lavender-deep);animation:blink 1.2s infinite;}
+  .scan-dots span:nth-child(2){animation-delay:.2s;}
+  .scan-dots span:nth-child(3){animation-delay:.4s;}
+  .scan-result-card{border-radius:16px;padding:14px 16px;margin-top:10px;animation:fadeIn .3s ease;}
+  .scan-result-card.safe{background:var(--safe-bg);border:1.5px solid var(--safe-border);}
+  .scan-result-card.warn{background:var(--warn-bg);border:1.5px solid var(--warn-border);}
+  .scan-result-card.info{background:var(--lavender-soft);border:1.5px solid #D8CCF5;}
+  .scan-name{font-size:16px;font-weight:700;font-family:'Fraunces','Noto Sans Devanagari',serif;margin:0 0 6px;}
+  .scan-verdict{font-size:13.5px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;gap:6px;}
+  .scan-detail-row{display:flex;gap:8px;padding:6px 0;border-top:1px solid rgba(0,0,0,0.06);font-size:12.5px;line-height:1.5;}
+  .scan-detail-row:first-of-type{border-top:none;}
+  .scan-detail-label{font-weight:700;flex-shrink:0;min-width:78px;opacity:.75;}
+  .scan-tab-toggle{display:flex;gap:4px;background:var(--coral-soft);padding:3px;border-radius:12px;margin-bottom:12px;}
+  .scan-tab-btn{flex:1;border:none;background:none;font-size:12px;font-weight:700;padding:8px 4px;border-radius:10px;color:var(--charcoal-soft);cursor:pointer;font-family:'DM Sans','Noto Sans Devanagari',sans-serif;}
+  .scan-tab-btn.active{background:var(--coral-deep);color:#fff;}
+  .scan-history-item{display:flex;align-items:center;gap:10px;background:var(--surface-soft);border-radius:12px;padding:8px 10px;margin-top:8px;font-size:12.5px;}
+  .scan-history-thumb{width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;}
+  .scan-history-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -322,6 +349,37 @@
           <p style="font-size:20px;font-weight:700;margin:4px 0 0;" id="water-count">0 / 8 Glasses</p>
         </div>
         <button data-i18n="addGlassBtn" class="btn-primary" style="background:var(--mint-deep);" onclick="addWater()">+ Glass</button>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <p data-i18n="camScanTitle" class="meal-label">📷 AI Camera Scanner</p>
+        <p data-i18n="camScanDesc" style="font-size:12px;color:var(--charcoal-soft);margin:4px 0 10px;">Snap or upload a photo of food, fruit, or medicine to identify it and check pregnancy safety.</p>
+
+        <div class="scan-tab-toggle">
+          <button class="scan-tab-btn active" id="scan-tab-food" onclick="setScanMode('food')" data-i18n="scanModeFood">🍎 Food / Fruit</button>
+          <button class="scan-tab-btn" id="scan-tab-medicine" onclick="setScanMode('medicine')" data-i18n="scanModeMedicine">💊 Medicine</button>
+          <button class="scan-tab-btn" id="scan-tab-barcode" onclick="setScanMode('barcode')" data-i18n="scanModeBarcode">📦 Barcode</button>
+        </div>
+
+        <div class="scan-zone" id="scan-zone" onclick="document.getElementById('scan-camera-input').click()">
+          <input type="file" id="scan-camera-input" accept="image/*" capture="environment" onchange="handleScanFile(event)">
+          <div class="scan-icon">📸</div>
+          <h4 data-i18n="scanTapHint">Tap to take a photo or choose from gallery</h4>
+          <p data-i18n="scanTapSub">Works best in good light, close-up shot</p>
+        </div>
+
+        <div class="scan-zone hidden" id="barcode-zone" style="cursor:default;padding:14px;">
+          <video id="barcode-video" playsinline muted style="width:100%;border-radius:12px;background:#000;max-height:220px;object-fit:cover;display:block;"></video>
+          <p id="barcode-status" style="font-size:12px;color:var(--charcoal-soft);margin:10px 0 8px;" data-i18n="barcodeIdle">Tap start to scan a packaged product's barcode</p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-primary" style="flex:1;" onclick="startBarcodeScanner()" data-i18n="barcodeStartBtn">▶️ Start Scanning</button>
+            <button class="btn-secondary" onclick="stopBarcodeScanner()" data-i18n="barcodeStopBtn">Stop</button>
+          </div>
+        </div>
+
+        <div id="scan-output"></div>
+
+        <div id="scan-history" style="margin-top:4px;"></div>
       </div>
 
       <div class="card" style="margin-bottom:14px;">
@@ -474,6 +532,29 @@ const TRANSLATIONS = {
     dinnerPlaceholder: "e.g. Khichdi with curd",
     logBtn: "Log",
     waterLabel: "💧 Water Intake", glassesUnit: "Glasses", addGlassBtn: "+ Glass",
+    camScanTitle: "📷 AI Camera Scanner",
+    camScanDesc: "Snap or upload a photo of food, fruit, or medicine to identify it and check pregnancy safety.",
+    scanModeFood: "🍎 Food / Fruit",
+    scanModeMedicine: "💊 Medicine",
+    scanTapHint: "Tap to take a photo or choose from gallery",
+    scanTapSub: "Works best in good light, close-up shot",
+    scanThinking: "Analyzing your photo...",
+    scanLabelSafety: "Safety", scanLabelWhy: "Why", scanLabelTip: "Tip", scanLabelNutrients: "Nutrients", scanLabelUse: "Common use", scanLabelDosage: "Dosage note",
+    scanSafe: "✅ Generally safe", scanCaution: "⚠️ Caution advised", scanAvoid: "❌ Avoid / Ask doctor",
+    scanNotRecognized: "Couldn't clearly identify this. Try a closer, well-lit photo, or ask your doctor directly.",
+    scanHistoryTitle: "Recent scans",
+    scanClearHistory: "Clear",
+    scanLabelBrand: "Brand",
+    scanModeBarcode: "📦 Barcode",
+    barcodeIdle: "Tap start to scan a packaged product's barcode",
+    barcodeStartBtn: "▶️ Start Scanning",
+    barcodeStopBtn: "Stop",
+    barcodeStarting: "Starting camera...",
+    barcodeAiming: "Point camera at the barcode...",
+    barcodeFound: "Found",
+    barcodeCameraError: "Couldn't access camera. Check permissions and try again.",
+    barcodeUnsupported: "Barcode scanning isn't supported on this browser. Try Chrome on Android, or use the photo scanner instead.",
+    barcodeNotFound: "Product not found in the database. Try the photo scanner instead, or check the label manually.",
     scannerTitle: "🔬 AI Food Safety Scanner",
     scannerDesc: "Type an ingredient to check if it's pregnancy-safe.",
     scannerPlaceholder: "e.g. Papaya, Sushi, Paneer",
@@ -527,6 +608,29 @@ const TRANSLATIONS = {
     dinnerPlaceholder: "जैसे खिचड़ी और दही",
     logBtn: "जोड़ें",
     waterLabel: "💧 पानी की मात्रा", glassesUnit: "गिलास", addGlassBtn: "+ गिलास",
+    camScanTitle: "📷 एआई कैमरा स्कैनर",
+    camScanDesc: "खाने, फल या दवा की फोटो खींचें या अपलोड करें — पहचान और गर्भावस्था सुरक्षा जानकारी पाएं।",
+    scanModeFood: "🍎 खाना / फल",
+    scanModeMedicine: "💊 दवा",
+    scanTapHint: "फोटो लेने या गैलरी से चुनने के लिए टैप करें",
+    scanTapSub: "अच्छी रोशनी में पास से ली गई फोटो सबसे बेहतर काम करती है",
+    scanThinking: "आपकी फोटो का विश्लेषण किया जा रहा है...",
+    scanLabelSafety: "सुरक्षा", scanLabelWhy: "क्यों", scanLabelTip: "सुझाव", scanLabelNutrients: "पोषक तत्व", scanLabelUse: "सामान्य उपयोग", scanLabelDosage: "मात्रा संबंधी नोट",
+    scanSafe: "✅ सामान्यतः सुरक्षित", scanCaution: "⚠️ सावधानी ज़रूरी", scanAvoid: "❌ बचें / डॉक्टर से पूछें",
+    scanNotRecognized: "इसे स्पष्ट रूप से पहचाना नहीं जा सका। कृपया पास से, अच्छी रोशनी में फोटो लें, या सीधे डॉक्टर से पूछें।",
+    scanHistoryTitle: "हाल की स्कैन",
+    scanClearHistory: "मिटाएं",
+    scanLabelBrand: "ब्रांड",
+    scanModeBarcode: "📦 बारकोड",
+    barcodeIdle: "पैकेज्ड प्रोडक्ट का बारकोड स्कैन करने के लिए स्टार्ट दबाएं",
+    barcodeStartBtn: "▶️ स्कैनिंग शुरू करें",
+    barcodeStopBtn: "रोकें",
+    barcodeStarting: "कैमरा शुरू हो रहा है...",
+    barcodeAiming: "कैमरे को बारकोड पर रखें...",
+    barcodeFound: "मिला",
+    barcodeCameraError: "कैमरा एक्सेस नहीं हो सका। अनुमति जांचें और फिर कोशिश करें।",
+    barcodeUnsupported: "इस ब्राउज़र में बारकोड स्कैनिंग सपोर्टेड नहीं है। एंड्रॉइड पर क्रोम आज़माएं, या इसके बजाय फोटो स्कैनर का उपयोग करें।",
+    barcodeNotFound: "डेटाबेस में प्रोडक्ट नहीं मिला। इसके बजाय फोटो स्कैनर आज़माएं, या लेबल मैन्युअल रूप से जांचें।",
     scannerTitle: "🔬 एआई फूड सेफ्टी स्कैनर",
     scannerDesc: "यह जानने के लिए कोई खाद्य पदार्थ टाइप करें कि वह गर्भावस्था में सुरक्षित है या नहीं।",
     scannerPlaceholder: "जैसे पपीता, सुशी, पनीर",
@@ -580,6 +684,29 @@ const TRANSLATIONS = {
     dinnerPlaceholder: "उदा. खिचडी आणि दही",
     logBtn: "नोंद करा",
     waterLabel: "💧 पाण्याचे प्रमाण", glassesUnit: "ग्लास", addGlassBtn: "+ ग्लास",
+    camScanTitle: "📷 एआय कॅमेरा स्कॅनर",
+    camScanDesc: "अन्न, फळ किंवा औषधाचा फोटो काढा किंवा अपलोड करा — ओळख आणि गर्भधारणा सुरक्षितता माहिती मिळवा.",
+    scanModeFood: "🍎 अन्न / फळ",
+    scanModeMedicine: "💊 औषध",
+    scanTapHint: "फोटो काढण्यासाठी किंवा गॅलरीतून निवडण्यासाठी टॅप करा",
+    scanTapSub: "चांगल्या प्रकाशात, जवळून घेतलेला फोटो सर्वोत्तम काम करतो",
+    scanThinking: "तुमच्या फोटोचे विश्लेषण करत आहे...",
+    scanLabelSafety: "सुरक्षितता", scanLabelWhy: "का", scanLabelTip: "सूचना", scanLabelNutrients: "पोषक घटक", scanLabelUse: "सामान्य वापर", scanLabelDosage: "मात्रा टिप्पणी",
+    scanSafe: "✅ साधारणपणे सुरक्षित", scanCaution: "⚠️ काळजी आवश्यक", scanAvoid: "❌ टाळा / डॉक्टरांना विचारा",
+    scanNotRecognized: "हे स्पष्टपणे ओळखता आले नाही. कृपया जवळून, चांगल्या प्रकाशात फोटो घ्या, किंवा थेट डॉक्टरांना विचारा.",
+    scanHistoryTitle: "अलीकडील स्कॅन",
+    scanClearHistory: "साफ करा",
+    scanLabelBrand: "ब्रँड",
+    scanModeBarcode: "📦 बारकोड",
+    barcodeIdle: "पॅकेज्ड उत्पादनाचा बारकोड स्कॅन करण्यासाठी स्टार्ट दाबा",
+    barcodeStartBtn: "▶️ स्कॅनिंग सुरू करा",
+    barcodeStopBtn: "थांबा",
+    barcodeStarting: "कॅमेरा सुरू होत आहे...",
+    barcodeAiming: "कॅमेरा बारकोडवर ठेवा...",
+    barcodeFound: "सापडले",
+    barcodeCameraError: "कॅमेरा अॅक्सेस होऊ शकला नाही. परवानगी तपासा आणि पुन्हा प्रयत्न करा.",
+    barcodeUnsupported: "या ब्राउझरमध्ये बारकोड स्कॅनिंग समर्थित नाही. अँड्रॉइडवर क्रोम वापरून पहा, किंवा त्याऐवजी फोटो स्कॅनर वापरा.",
+    barcodeNotFound: "डेटाबेसमध्ये उत्पादन सापडले नाही. त्याऐवजी फोटो स्कॅनर वापरा, किंवा लेबल स्वतः तपासा.",
     scannerTitle: "🔬 एआय फूड सेफ्टी स्कॅनर",
     scannerDesc: "गर्भधारणेत सुरक्षित आहे का हे तपासण्यासाठी एखादा पदार्थ टाइप करा.",
     scannerPlaceholder: "उदा. पपई, सुशी, पनीर",
@@ -658,6 +785,7 @@ function applyTranslations(){
   renderKickHistory();
   renderContractionHistory();
   renderSymptomList();
+  renderScanHistory();
 }
 
 /* ============ TAB NAVIGATION ============ */
@@ -808,6 +936,303 @@ async function checkFoodSafety(){
   resultBox.innerHTML = verdict.safe
     ? `<div class="result-box safe">✅ ${escapeHTML(verdict.message)}</div>`
     : `<div class="result-box warn">❌ ${escapeHTML(verdict.message)}</div>`;
+}
+
+/* ============ CAMERA SCANNER (food / fruit / medicine / barcode) ============ */
+state.scanMode = 'food';
+state.scanHistory = loadScanHistory();
+
+function loadScanHistory(){
+  try {
+    const raw = localStorage.getItem('mamacare_scan_history');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){ return []; }
+}
+function saveScanHistory(){
+  try {
+    localStorage.setItem('mamacare_scan_history', JSON.stringify(state.scanHistory));
+  } catch(e){ /* storage full or unavailable, fail silently */ }
+}
+
+function setScanMode(mode){
+  state.scanMode = mode;
+  document.getElementById('scan-tab-food').classList.toggle('active', mode === 'food');
+  document.getElementById('scan-tab-medicine').classList.toggle('active', mode === 'medicine');
+  document.getElementById('scan-tab-barcode').classList.toggle('active', mode === 'barcode');
+  const zone = document.getElementById('scan-zone');
+  const barcodeZone = document.getElementById('barcode-zone');
+  if(mode === 'barcode'){
+    zone.classList.add('hidden');
+    barcodeZone.classList.remove('hidden');
+  } else {
+    zone.classList.remove('hidden');
+    barcodeZone.classList.add('hidden');
+    stopBarcodeScanner();
+  }
+}
+window.setScanMode = setScanMode;
+
+async function callClaudeVisionAPI(systemPrompt, userText, base64Image, mediaType){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 700,
+      system: systemPrompt,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mediaType, data: base64Image } },
+          { type: "text", text: userText }
+        ]
+      }]
+    })
+  });
+  if(!response.ok) throw new Error('API error ' + response.status);
+  const data = await response.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if(!textBlock) throw new Error('No text in response');
+  return textBlock.text;
+}
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+/* Make a small (120px) compressed thumbnail so we can safely store it in localStorage */
+function makeThumbnail(file){
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const size = 120;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size / img.width, size / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.6));
+    };
+    img.onerror = () => resolve('');
+    img.src = url;
+  });
+}
+
+async function handleScanFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const mode = state.scanMode;
+  const outputBox = document.getElementById('scan-output');
+  const previewUrl = URL.createObjectURL(file);
+
+  outputBox.innerHTML = `
+    <img src="${previewUrl}" class="scan-preview" alt="scan preview">
+    <div class="scan-loading"><span class="scan-dots"><span></span><span></span><span></span></span>${t('scanThinking')}</div>
+  `;
+
+  try {
+    const mediaType = file.type || 'image/jpeg';
+    const [base64, thumb] = await Promise.all([fileToBase64(file), makeThumbnail(file)]);
+    const result = await getScanResultSmart(base64, mediaType, mode);
+    renderScanResult(result, previewUrl, mode);
+    pushScanHistory(result, thumb);
+  } catch(err){
+    outputBox.innerHTML = `
+      <img src="${previewUrl}" class="scan-preview" alt="scan preview">
+      <div class="scan-result-card info">
+        <p class="scan-verdict">⚠️ ${escapeHTML(t('scanNotRecognized'))}</p>
+      </div>
+    `;
+  }
+  event.target.value = '';
+}
+window.handleScanFile = handleScanFile;
+
+async function getScanResultSmart(base64Image, mediaType, mode){
+  const lang = LANG_NAME[state.lang] || 'English';
+  const systemPrompt = mode === 'medicine'
+    ? `You are a careful pregnancy-safety visual identifier inside a wellness app called MamaCare AI. Look at the photo of a medicine, tablet strip, or packaging. Respond ONLY with raw JSON, no markdown, no code fences, in this exact shape: {"name":"<medicine/product name you can read or identify, in ${lang}>","verdict":"safe" or "caution" or "avoid","why":"<one short sentence in ${lang} on general pregnancy-safety context>","tip":"<one short practical sentence in ${lang}, always include a reminder to confirm with her doctor before taking anything, especially dosage>","dosage":"<short general note in ${lang} on why exact dosage must come from a doctor, never give a specific dose>"}. NEVER recommend a specific dosage or tell her to take/start any medication. If you cannot clearly read the name, set verdict to "caution" and explain in "why" that the photo wasn't clear. Be conservative — when uncertain, default to "caution" or "avoid" with a doctor reminder.`
+    : `You are a friendly pregnancy food-safety visual identifier inside a wellness app called MamaCare AI. Look at the photo of a food item or fruit. Respond ONLY with raw JSON, no markdown, no code fences, in this exact shape: {"name":"<food/fruit name in ${lang}>","verdict":"safe" or "caution" or "avoid","why":"<one short sentence in ${lang} explaining the safety context>","tip":"<one short practical tip in ${lang}, e.g. cook it fully, wash well, eat in moderation>","nutrients":"<one short phrase in ${lang} listing 1-3 key nutrients this food offers, relevant to pregnancy>"}. Use general, widely-known pregnancy nutrition guidance (avoid raw/undercooked meat or eggs, high-mercury fish, unpasteurized dairy, excess caffeine, raw sprouts, unwashed produce; most fully-cooked home foods are fine in moderation). If you cannot identify the item clearly, set verdict to "caution" and say so in "why".`;
+
+  const userText = mode === 'medicine'
+    ? `Identify this medicine/product and assess general pregnancy-safety context. Respond in ${lang} only, as raw JSON.`
+    : `Identify this food/fruit and assess pregnancy safety. Respond in ${lang} only, as raw JSON.`;
+
+  const raw = await callClaudeVisionAPI(systemPrompt, userText, base64Image, mediaType);
+  const cleaned = raw.replace(/```json|```/g, '').trim();
+  const parsed = JSON.parse(cleaned);
+  if(!parsed.name || !parsed.verdict) throw new Error('Unexpected response shape');
+  parsed.mode = mode;
+  return parsed;
+}
+
+function verdictMeta(verdict){
+  if(verdict === 'safe') return { cls: 'safe', icon: '✅', labelKey: 'scanSafe' };
+  if(verdict === 'avoid') return { cls: 'warn', icon: '❌', labelKey: 'scanAvoid' };
+  return { cls: 'info', icon: '⚠️', labelKey: 'scanCaution' };
+}
+
+function renderScanResult(result, previewUrl, mode){
+  const meta = verdictMeta(result.verdict);
+  const outputBox = document.getElementById('scan-output');
+
+  let extraRow = '';
+  if(mode === 'medicine' && result.dosage){
+    extraRow = `<div class="scan-detail-row"><span class="scan-detail-label">${t('scanLabelDosage')}</span><span>${escapeHTML(result.dosage)}</span></div>`;
+  } else if(mode !== 'medicine' && result.nutrients){
+    extraRow = `<div class="scan-detail-row"><span class="scan-detail-label">${t('scanLabelNutrients')}</span><span>${escapeHTML(result.nutrients)}</span></div>`;
+  }
+  let brandRow = result.brand ? `<div class="scan-detail-row"><span class="scan-detail-label">${t('scanLabelBrand')}</span><span>${escapeHTML(result.brand)}</span></div>` : '';
+
+  outputBox.innerHTML = `
+    <img src="${previewUrl}" class="scan-preview" alt="${escapeHTML(result.name)}">
+    <div class="scan-result-card ${meta.cls}">
+      <p class="scan-name">${escapeHTML(result.name)}</p>
+      <p class="scan-verdict">${meta.icon} ${escapeHTML(t(meta.labelKey))}</p>
+      ${brandRow}
+      <div class="scan-detail-row"><span class="scan-detail-label">${t('scanLabelWhy')}</span><span>${escapeHTML(result.why || '')}</span></div>
+      <div class="scan-detail-row"><span class="scan-detail-label">${t('scanLabelTip')}</span><span>${escapeHTML(result.tip || '')}</span></div>
+      ${extraRow}
+    </div>
+  `;
+}
+
+function pushScanHistory(result, thumb){
+  state.scanHistory.unshift({ name: result.name, verdict: result.verdict, thumb: thumb || '', ts: Date.now() });
+  state.scanHistory = state.scanHistory.slice(0, 8);
+  saveScanHistory();
+  renderScanHistory();
+}
+
+function clearScanHistory(){
+  state.scanHistory = [];
+  saveScanHistory();
+  renderScanHistory();
+}
+window.clearScanHistory = clearScanHistory;
+
+function renderScanHistory(){
+  const box = document.getElementById('scan-history');
+  if(!box) return;
+  if(!state.scanHistory.length){ box.innerHTML = ''; return; }
+  const dotColor = v => v === 'safe' ? 'var(--mint-deep)' : v === 'avoid' ? 'var(--coral-deep)' : 'var(--sunshine-deep)';
+  box.innerHTML = `
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:10px 0 2px;">
+      <p style="font-size:11px;font-weight:700;color:var(--charcoal-soft);margin:0;text-transform:uppercase;letter-spacing:.04em;">${t('scanHistoryTitle')}</p>
+      <button onclick="clearScanHistory()" style="background:none;border:none;color:var(--coral-deep);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;">${t('scanClearHistory')}</button>
+    </div>
+    ${state.scanHistory.map(h => `
+      <div class="scan-history-item">
+        ${h.thumb ? `<img src="${h.thumb}" class="scan-history-thumb" alt="">` : `<span class="scan-history-thumb" style="background:var(--coral-soft);display:flex;align-items:center;justify-content:center;font-size:14px;">📦</span>`}
+        <span class="scan-history-dot" style="background:${dotColor(h.verdict)};"></span>
+        <span style="flex:1;font-weight:600;">${escapeHTML(h.name)}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ============ BARCODE SCANNER (Open Food Facts — free, no API key) ============ */
+let barcodeStream = null;
+let barcodeDetector = null;
+let barcodeRAF = null;
+
+async function startBarcodeScanner(){
+  const video = document.getElementById('barcode-video');
+  const statusEl = document.getElementById('barcode-status');
+  statusEl.textContent = t('barcodeStarting');
+
+  try {
+    barcodeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = barcodeStream;
+    await video.play();
+  } catch(err){
+    statusEl.textContent = t('barcodeCameraError');
+    return;
+  }
+
+  if('BarcodeDetector' in window){
+    try {
+      barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] });
+      statusEl.textContent = t('barcodeAiming');
+      scanBarcodeLoop(video, statusEl);
+    } catch(err){
+      statusEl.textContent = t('barcodeUnsupported');
+    }
+  } else {
+    statusEl.textContent = t('barcodeUnsupported');
+  }
+}
+
+function scanBarcodeLoop(video, statusEl){
+  if(!barcodeStream) return;
+  barcodeDetector.detect(video).then(codes => {
+    if(codes.length > 0){
+      const code = codes[0].rawValue;
+      stopBarcodeScanner();
+      statusEl.textContent = t('barcodeFound') + ': ' + code;
+      lookupBarcode(code);
+    } else {
+      barcodeRAF = requestAnimationFrame(() => scanBarcodeLoop(video, statusEl));
+    }
+  }).catch(() => {
+    barcodeRAF = requestAnimationFrame(() => scanBarcodeLoop(video, statusEl));
+  });
+}
+
+function stopBarcodeScanner(){
+  if(barcodeRAF) cancelAnimationFrame(barcodeRAF);
+  barcodeRAF = null;
+  if(barcodeStream){
+    barcodeStream.getTracks().forEach(tr => tr.stop());
+    barcodeStream = null;
+  }
+}
+window.stopBarcodeScanner = stopBarcodeScanner;
+window.startBarcodeScanner = startBarcodeScanner;
+
+async function lookupBarcode(code){
+  const outputBox = document.getElementById('scan-output');
+  outputBox.innerHTML = `<div class="scan-loading"><span class="scan-dots"><span></span><span></span><span></span></span>${t('scanThinking')}</div>`;
+  try {
+    const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json`);
+    const data = await res.json();
+    if(data.status !== 1 || !data.product){
+      throw new Error('Not found');
+    }
+    const product = data.product;
+    const name = product.product_name || product.product_name_en || code;
+    const brand = product.brands || '';
+    const ingredients = product.ingredients_text || product.ingredients_text_en || '';
+    const result = await getBarcodeSafetySmart(name, brand, ingredients);
+    result.brand = brand;
+    renderScanResult(result, product.image_front_small_url || product.image_url || '', 'food');
+    pushScanHistory(result, '');
+  } catch(err){
+    outputBox.innerHTML = `<div class="scan-result-card info"><p class="scan-verdict">⚠️ ${escapeHTML(t('barcodeNotFound'))}</p></div>`;
+  }
+}
+
+async function getBarcodeSafetySmart(name, brand, ingredients){
+  const lang = LANG_NAME[state.lang] || 'English';
+  const systemPrompt = `You are a pregnancy food-safety checker inside a wellness app called MamaCare AI. Given a packaged product's name, brand, and ingredient list, respond ONLY with raw JSON, no markdown, no code fences, in this exact shape: {"name":"<product name in ${lang}>","verdict":"safe" or "caution" or "avoid","why":"<one short sentence in ${lang}>","tip":"<one short practical tip in ${lang}>","nutrients":"<one short phrase in ${lang} on relevant nutrition notes, e.g. high sugar, high sodium, good fiber>"}. Flag products high in caffeine, alcohol, raw/unpasteurized ingredients, excess sodium or sugar, or artificial additives of concern as "caution". Most ordinary packaged snacks in moderation are "safe" with a tip about portion control.`;
+  const userText = `Product: ${name}\nBrand: ${brand}\nIngredients: ${ingredients || 'not listed'}\n\nRespond in ${lang} only, as raw JSON.`;
+  try {
+    const raw = await callClaudeAPI(systemPrompt, userText);
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    if(!parsed.name || !parsed.verdict) throw new Error('bad shape');
+    return parsed;
+  } catch(err){
+    return { name, verdict: 'caution', why: t('scanNotRecognized'), tip: '', nutrients: '' };
+  }
 }
 
 /* ============ VITALS & FITNESS ============ */
